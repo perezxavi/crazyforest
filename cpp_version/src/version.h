@@ -1,3 +1,4 @@
-#ifndef RANGER_VERSION
-#define RANGER_VERSION "0.18.0"
+﻿#ifndef crazyforest_VERSION
+#define crazyforest_VERSION "0.18.0"
 #endif
+

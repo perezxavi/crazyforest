@@ -1,18 +1,18 @@
 ## Tests for node statistics
 
-library(ranger)
+library(crazyforest)
 library(survival)
-context("ranger_nodestats")
+context("crazyforest_nodestats")
 
 test_that("if node.stats FALSE, no nodestats saved, classification", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5)
   expect_null(rf$forest$num.samples.nodes)
   expect_null(rf$forest$node.predictions)
   expect_null(rf$forest$split.stats)
 })
 
 test_that("if node.stats FALSE, no nodestats saved, probability", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, probability = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE)
   expect_null(rf$forest$num.samples.nodes)
   expect_null(rf$forest$node.predictions)
   expect_null(rf$forest$split.stats)
@@ -20,14 +20,14 @@ test_that("if node.stats FALSE, no nodestats saved, probability", {
 })
 
 test_that("if node.stats FALSE, no nodestats saved, regression", {
-  rf <- ranger(Sepal.Length ~ ., iris, num.trees = 5)
+  rf <- crazyforest(Sepal.Length ~ ., iris, num.trees = 5)
   expect_null(rf$forest$num.samples.nodes)
   expect_null(rf$forest$node.predictions)
   expect_null(rf$forest$split.stats)
 })
 
 test_that("if node.stats FALSE, no nodestats saved, survival", {
-  rf <- ranger(Surv(time, status) ~ ., veteran, num.trees = 5)
+  rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5)
   expect_null(rf$forest$num.samples.nodes)
   expect_null(rf$forest$node.predictions)
   expect_null(rf$forest$split.stats)
@@ -35,7 +35,7 @@ test_that("if node.stats FALSE, no nodestats saved, survival", {
 })
 
 test_that("if node.stats TRUE, nodestats saved, classification", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, node.stats = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, node.stats = TRUE)
   
   expect_is(rf$forest$num.samples.nodes, "list")
   expect_length(rf$forest$num.samples.nodes, rf$num.trees)
@@ -51,7 +51,7 @@ test_that("if node.stats TRUE, nodestats saved, classification", {
 })
 
 test_that("if node.stats TRUE, nodestats saved, probability", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, probability = TRUE, node.stats = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE, node.stats = TRUE)
   
   expect_is(rf$forest$num.samples.nodes, "list")
   expect_length(rf$forest$num.samples.nodes, rf$num.trees)
@@ -69,7 +69,7 @@ test_that("if node.stats TRUE, nodestats saved, probability", {
 })
 
 test_that("if node.stats TRUE, nodestats saved, regression", {
-  rf <- ranger(Sepal.Length ~ ., iris, num.trees = 5, node.stats = TRUE)
+  rf <- crazyforest(Sepal.Length ~ ., iris, num.trees = 5, node.stats = TRUE)
   
   expect_is(rf$forest$num.samples.nodes, "list")
   expect_length(rf$forest$num.samples.nodes, rf$num.trees)
@@ -85,7 +85,7 @@ test_that("if node.stats TRUE, nodestats saved, regression", {
 })
 
 test_that("if node.stats TRUE, nodestats saved, survival", {
-  rf <- ranger(Surv(time, status) ~ ., veteran, num.trees = 5, node.stats = TRUE)
+  rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, node.stats = TRUE)
   
   expect_is(rf$forest$num.samples.nodes, "list")
   expect_length(rf$forest$num.samples.nodes, rf$num.trees)

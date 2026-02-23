@@ -1,22 +1,22 @@
 /*-------------------------------------------------------------------------------
- This file is part of Ranger.
+ This file is part of CrazyForest.
 
- Ranger is free software: you can redistribute it and/or modify
+ CrazyForest is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
- Ranger is distributed in the hope that it will be useful,
+ CrazyForest is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with Ranger. If not, see <http://www.gnu.org/licenses/>.
+ along with CrazyForest. If not, see <http://www.gnu.org/licenses/>.
 
  Written by:
 
- Marvin N. Wright
+ Javier Pérez-Rodríguez
  Institut für Medizinische Biometrie und Statistik
  Universität zu Lübeck
  Ratzeburger Allee 160
@@ -30,21 +30,23 @@
 
 #include <RcppEigen.h>
 
+#include "Data.h"
 #include "globals.h"
 #include "utility.h"
-#include "Data.h"
 
-namespace ranger {
 
-class DataSparse: public Data {
+namespace crazyforest {
+
+class DataSparse : public Data {
 public:
   DataSparse() = default;
-  
-  DataSparse(Eigen::SparseMatrix<double>& x, Rcpp::NumericMatrix& y, std::vector<std::string> variable_names, size_t num_rows,
-      size_t num_cols, bool any_na);
 
-  DataSparse(const DataSparse&) = delete;
-  DataSparse& operator=(const DataSparse&) = delete;
+  DataSparse(Eigen::SparseMatrix<double> &x, Rcpp::NumericMatrix &y,
+             std::vector<std::string> variable_names, size_t num_rows,
+             size_t num_cols, bool any_na);
+
+  DataSparse(const DataSparse &) = delete;
+  DataSparse &operator=(const DataSparse &) = delete;
 
   virtual ~DataSparse() override = default;
 
@@ -56,30 +58,30 @@ public:
     }
     return x.coeff(row, col);
   }
-  
+
   double get_y(size_t row, size_t col) const override {
     return y[col * num_rows + row];
   }
 
-  // #nocov start 
+  // #nocov start
   void reserveMemory(size_t y_cols) override {
     // Not needed
   }
 
-  void set_x(size_t col, size_t row, double value, bool& error) override {
+  void set_x(size_t col, size_t row, double value, bool &error) override {
     x.coeffRef(row, col) = value;
   }
-  
-  void set_y(size_t col, size_t row, double value, bool& error) override {
+
+  void set_y(size_t col, size_t row, double value, bool &error) override {
     y[col * num_rows + row] = value;
   }
-  // #nocov end 
+  // #nocov end
 
 private:
   Eigen::SparseMatrix<double> x;
   Rcpp::NumericMatrix y;
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* DATASPARSE_H_ */

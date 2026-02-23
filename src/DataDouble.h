@@ -1,12 +1,11 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 // Ignore in coverage report (not used in R package)
@@ -14,21 +13,23 @@
 #ifndef DATADOUBLE_H_
 #define DATADOUBLE_H_
 
-#include <vector>
 #include <utility>
+#include <vector>
 
+
+#include "Data.h"
 #include "globals.h"
 #include "utility.h"
-#include "Data.h"
 
-namespace ranger {
 
-class DataDouble: public Data {
+namespace crazyforest {
+
+class DataDouble : public Data {
 public:
   DataDouble() = default;
-  
-  DataDouble(const DataDouble&) = delete;
-  DataDouble& operator=(const DataDouble&) = delete;
+
+  DataDouble(const DataDouble &) = delete;
+  DataDouble &operator=(const DataDouble &) = delete;
 
   virtual ~DataDouble() override = default;
 
@@ -56,11 +57,11 @@ public:
     y.resize(y_cols * num_rows);
   }
 
-  void set_x(size_t col, size_t row, double value, bool& error) override {
+  void set_x(size_t col, size_t row, double value, bool &error) override {
     x[col * num_rows + row] = value;
   }
 
-  void set_y(size_t col, size_t row, double value, bool& error) override {
+  void set_y(size_t col, size_t row, double value, bool &error) override {
     y[col * num_rows + row] = value;
   }
 
@@ -69,7 +70,7 @@ private:
   std::vector<double> y;
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* DATADOUBLE_H_ */
 // #nocov end

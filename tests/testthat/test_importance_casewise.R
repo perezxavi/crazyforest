@@ -11,7 +11,7 @@ test_that("casewise importance works, classification", {
   rownames(data) <- paste0("case_", seq_len(nrow(data)))
   data$a <- factor(ifelse(ifelse(data$x < .5, data$y, data$z) > 1.5, "left", "right"))
   
-  rf <- ranger(
+  rf <- crazyforest(
     data = data,
     dependent.variable.name = "a",
     importance = "permutation",
@@ -43,7 +43,7 @@ test_that("casewise importance works, regression", {
   rownames(data) <- paste0("case_", seq_len(nrow(data)))
   data$a <- ifelse(data$x < .5, data$y, data$z)
   
-  rf <- ranger(
+  rf <- crazyforest(
     data = data,
     dependent.variable.name = "a",
     importance = "permutation",
@@ -76,7 +76,7 @@ test_that("casewise importance works, probability", {
   # data$a <- ifelse(data$x < .5, data$y, data$z)
   data$a <- factor(ifelse(ifelse(data$x < .5, data$y, data$z) > 1.5, "left", "right"))
   
-  rf <- ranger(
+  rf <- crazyforest(
     data = data,
     dependent.variable.name = "a",
     importance = "permutation",
@@ -110,7 +110,7 @@ test_that("casewise importance works, survival", {
   rownames(data) <- paste0("case_", seq_len(nrow(data)))
   data$a <- (ifelse(data$x < .5, data$y, data$z))
   
-  rf <- ranger(
+  rf <- crazyforest(
     data = data,
     dependent.variable.name = "a",
     status.variable.name = "surv",

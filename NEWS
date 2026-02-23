@@ -1,4 +1,4 @@
-
+﻿
 ##### Version 0.18.0
 * Fix compilation with C++20
 * Fix bug where missing value handling lead to negative impurity importance values
@@ -34,7 +34,7 @@
 
 ##### Version 0.13.0
 * Faster quantile prediction
-* Add ... argument to ranger()
+* Add ... argument to crazyforest()
 * Bug fixes
 
 ##### Version 0.12.0
@@ -177,7 +177,7 @@
 ##### Version 0.1.4 
 * Speedup for survival forests with continuous covariates
 * R version: Generate seed from R. It is no longer necessary to set the
-  seed argument in ranger calls.
+  seed argument in crazyforest calls.
 
 ##### Version 0.1.3 
 * Windows support for R version (without multithreading)
@@ -191,6 +191,7 @@
 	prediction forests
 * Slot "predictions" for probability forests now contains class probabilities
 * importance function is now working even if randomForest package is
-	loaded after ranger
+	loaded after crazyforest
 * Fixed a bug: Split selection weights are now working as expected
 * Small changes in documentation
+

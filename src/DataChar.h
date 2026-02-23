@@ -1,12 +1,11 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 // Ignore in coverage report (not used in R package)
@@ -14,21 +13,23 @@
 #ifndef DATACHAR_H_
 #define DATACHAR_H_
 
-#include <vector>
 #include <utility>
+#include <vector>
 
+
+#include "Data.h"
 #include "globals.h"
 #include "utility.h"
-#include "Data.h"
 
-namespace ranger {
 
-class DataChar: public Data {
+namespace crazyforest {
+
+class DataChar : public Data {
 public:
   DataChar() = default;
 
-  DataChar(const DataChar&) = delete;
-  DataChar& operator=(const DataChar&) = delete;
+  DataChar(const DataChar &) = delete;
+  DataChar &operator=(const DataChar &) = delete;
 
   virtual ~DataChar() override = default;
 
@@ -56,11 +57,11 @@ public:
     y.resize(y_cols * num_rows);
   }
 
-  void set_x(size_t col, size_t row, double value, bool& error) override {
+  void set_x(size_t col, size_t row, double value, bool &error) override {
     x[col * num_rows + row] = value;
   }
 
-  void set_y(size_t col, size_t row, double value, bool& error) override {
+  void set_y(size_t col, size_t row, double value, bool &error) override {
     y[col * num_rows + row] = value;
   }
 
@@ -69,7 +70,7 @@ private:
   std::vector<char> y;
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* DATACHAR_H_ */
 // #nocov end

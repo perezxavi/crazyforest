@@ -1,29 +1,29 @@
-# -------------------------------------------------------------------------------
-#   This file is part of Ranger.
+﻿# -------------------------------------------------------------------------------
+#   This file is part of CrazyForest.
 #
-# Ranger is free software: you can redistribute it and/or modify
+# CrazyForest is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Ranger is distributed in the hope that it will be useful,
+# CrazyForest is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ranger. If not, see <http://www.gnu.org/licenses/>.
+# along with CrazyForest. If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by:
 #
-#   Marvin N. Wright
-# Institut fuer Medizinische Biometrie und Statistik
-# Universitaet zu Luebeck
-# Ratzeburger Allee 160
-# 23562 Luebeck
+#   Javier Pérez-Rodríguez
+# Universidad de CÃ³rdoba
+# Spain
+
+
 # Germany
 #
-# http://www.imbs-luebeck.de
+# javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
 ##' Case-specific random forests.
@@ -60,13 +60,13 @@
 ##'      params1 = list(num.trees = 50, mtry = 4), 
 ##'      params2 = list(num.trees = 5))
 ##' 
-##' @author Marvin N. Wright
+##' @author Javier Pérez-Rodríguez
 ##' @references
 ##'   Xu, R., Nettleton, D. & Nordman, D.J. (2014). Case-specific random forests. J Comp Graph Stat 25:49-65. \doi{10.1080/10618600.2014.983641}.
 ##' @export
 csrf <- function(formula, training_data, test_data, params1 = list(), params2 = list(), verbose = FALSE) {
   ## Grow a random forest on the training data to obtain weights
-  rf.proximity <- do.call(ranger, c(list(formula = formula, data = training_data, 
+  rf.proximity <- do.call(crazyforest, c(list(formula = formula, data = training_data, 
                                          write.forest = TRUE), params1))
   
   ## Get terminal nodes
@@ -87,7 +87,7 @@ csrf <- function(formula, training_data, test_data, params1 = list(), params2 = 
     weights <- num.same.node / sum(num.same.node)
     
     ## Grow weighted RF
-    rf.prediction <- do.call(ranger, c(list(formula = formula, data = training_data, 
+    rf.prediction <- do.call(crazyforest, c(list(formula = formula, data = training_data, 
                                             write.forest = TRUE, case.weights = weights), 
                                        params2))
     
@@ -98,6 +98,7 @@ csrf <- function(formula, training_data, test_data, params1 = list(), params2 = 
   ## Return predictions
   predictions
 }
+
 
 
 

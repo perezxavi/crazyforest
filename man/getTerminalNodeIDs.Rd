@@ -7,7 +7,7 @@
 getTerminalNodeIDs(rf, dat)
 }
 \arguments{
-\item{rf}{\code{ranger} object.}
+\item{rf}{\code{crazyforest} object.}
 
 \item{dat}{New dataset. Terminal node IDs for this dataset are obtained.}
 }
@@ -20,6 +20,6 @@ Please use predict() with \code{type = "terminalNodes"} instead.
 This function calls predict() now.
 }
 \examples{
-rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
+rf <- crazyforest(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 getTerminalNodeIDs(rf, iris)
 }

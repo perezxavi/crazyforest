@@ -1,59 +1,63 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 #ifndef DATA_H_
 #define DATA_H_
 
-#include <vector>
+#include <algorithm>
 #include <iostream>
 #include <numeric>
 #include <random>
-#include <algorithm>
+#include <vector>
+
 
 #include "globals.h"
 
-namespace ranger {
+namespace crazyforest {
 
 class Data {
 public:
   Data();
 
-  Data(const Data&) = delete;
-  Data& operator=(const Data&) = delete;
+  Data(const Data &) = delete;
+  Data &operator=(const Data &) = delete;
 
   virtual ~Data() = default;
 
   virtual double get_x(size_t row, size_t col) const = 0;
   virtual double get_y(size_t row, size_t col) const = 0;
 
-  size_t getVariableID(const std::string& variable_name) const;
+  size_t getVariableID(const std::string &variable_name) const;
 
   virtual void reserveMemory(size_t y_cols) = 0;
 
-  virtual void set_x(size_t col, size_t row, double value, bool& error) = 0;
-  virtual void set_y(size_t col, size_t row, double value, bool& error) = 0;
+  virtual void set_x(size_t col, size_t row, double value, bool &error) = 0;
+  virtual void set_y(size_t col, size_t row, double value, bool &error) = 0;
 
-  void addSnpData(unsigned char* snp_data, size_t num_cols_snp);
+  void addSnpData(unsigned char *snp_data, size_t num_cols_snp);
 
-  bool loadFromFile(std::string filename, std::vector<std::string>& dependent_variable_names);
-  bool loadFromFileWhitespace(std::ifstream& input_file, std::string header_line,
-      std::vector<std::string>& dependent_variable_names);
-  bool loadFromFileOther(std::ifstream& input_file, std::string header_line,
-      std::vector<std::string>& dependent_variable_names, char separator);
+  bool loadFromFile(std::string filename,
+                    std::vector<std::string> &dependent_variable_names);
+  bool
+  loadFromFileWhitespace(std::ifstream &input_file, std::string header_line,
+                         std::vector<std::string> &dependent_variable_names);
+  bool loadFromFileOther(std::ifstream &input_file, std::string header_line,
+                         std::vector<std::string> &dependent_variable_names,
+                         char separator);
 
-  void getAllValues(std::vector<double>& all_values, std::vector<size_t>& sampleIDs, size_t varID, size_t start,
-      size_t end) const;
+  void getAllValues(std::vector<double> &all_values,
+                    std::vector<size_t> &sampleIDs, size_t varID, size_t start,
+                    size_t end) const;
 
-  void getMinMaxValues(double& min, double&max, std::vector<size_t>& sampleIDs, size_t varID, size_t start,
-      size_t end) const;
+  void getMinMaxValues(double &min, double &max, std::vector<size_t> &sampleIDs,
+                       size_t varID, size_t start, size_t end) const;
 
   size_t getIndex(size_t row, size_t col) const {
     // Use permuted data for corrected impurity importance
@@ -74,7 +78,8 @@ public:
   size_t getSnp(size_t row, size_t col, size_t col_permuted) const {
     // Get data out of snp storage. -1 because of GenABEL coding.
     size_t idx = (col - num_cols_no_snp) * num_rows_rounded + row;
-    size_t result = ((snp_data[idx / 4] & mask[idx % 4]) >> offset[idx % 4]) - 1;
+    size_t result =
+        ((snp_data[idx / 4] & mask[idx % 4]) >> offset[idx % 4]) - 1;
 
     // TODO: Better way to treat missing values?
     if (result > 2) {
@@ -125,19 +130,16 @@ public:
 
   void orderSnpLevels(bool corrected_importance);
 
-  const std::vector<std::string>& getVariableNames() const {
+  const std::vector<std::string> &getVariableNames() const {
     return variable_names;
   }
-  size_t getNumCols() const {
-    return num_cols;
-  }
-  size_t getNumRows() const {
-    return num_rows;
-  }
+  size_t getNumCols() const { return num_cols; }
+  size_t getNumRows() const { return num_rows; }
 
   size_t getMaxNumUniqueValues() const {
     if (snp_data == 0 || max_num_unique_values > 3) {
-      // If no snp data or one variable with more than 3 unique values, return that value
+      // If no snp data or one variable with more than 3 unique values, return
+      // that value
       return max_num_unique_values;
     } else {
       // If snp data and no variable with more than 3 unique values, return 3
@@ -145,19 +147,20 @@ public:
     }
   }
 
-  std::vector<bool>& getIsOrderedVariable() noexcept {
+  std::vector<bool> &getIsOrderedVariable() noexcept {
     return is_ordered_variable;
   }
 
-  void setIsOrderedVariable(const std::vector<std::string>& unordered_variable_names) {
+  void setIsOrderedVariable(
+      const std::vector<std::string> &unordered_variable_names) {
     is_ordered_variable.resize(num_cols, true);
-    for (auto& variable_name : unordered_variable_names) {
+    for (auto &variable_name : unordered_variable_names) {
       size_t varID = getVariableID(variable_name);
       is_ordered_variable[varID] = false;
     }
   }
 
-  void setIsOrderedVariable(std::vector<bool>& is_ordered_variable) {
+  void setIsOrderedVariable(std::vector<bool> &is_ordered_variable) {
     this->is_ordered_variable = is_ordered_variable;
   }
 
@@ -172,7 +175,8 @@ public:
   void permuteSampleIDs(std::mt19937_64 random_number_generator) {
     permuted_sampleIDs.resize(num_rows);
     std::iota(permuted_sampleIDs.begin(), permuted_sampleIDs.end(), 0);
-    std::shuffle(permuted_sampleIDs.begin(), permuted_sampleIDs.end(), random_number_generator);
+    std::shuffle(permuted_sampleIDs.begin(), permuted_sampleIDs.end(),
+                 random_number_generator);
   }
 
   size_t getPermutedSampleID(size_t sampleID) const {
@@ -185,17 +189,15 @@ public:
     }
     return varID;
   }
-  
-  const bool hasNA() const {
-    return any_na;
-  }
+
+  const bool hasNA() const { return any_na; }
 
   // #nocov start (cannot be tested anymore because GenABEL not on CRAN)
-  const std::vector<std::vector<size_t>>& getSnpOrder() const {
+  const std::vector<std::vector<size_t>> &getSnpOrder() const {
     return snp_order;
   }
 
-  void setSnpOrder(std::vector<std::vector<size_t>>& snp_order) {
+  void setSnpOrder(std::vector<std::vector<size_t>> &snp_order) {
     this->snp_order = snp_order;
     order_snps = true;
   }
@@ -207,7 +209,7 @@ protected:
   size_t num_rows_rounded;
   size_t num_cols;
 
-  unsigned char* snp_data;
+  unsigned char *snp_data;
   size_t num_cols_no_snp;
 
   bool externalData;
@@ -225,11 +227,11 @@ protected:
   // Order of 0/1/2 for ordered splitting
   std::vector<std::vector<size_t>> snp_order;
   bool order_snps;
-  
+
   // Any missing values?
   bool any_na;
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* DATA_H_ */

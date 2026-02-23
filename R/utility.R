@@ -1,29 +1,29 @@
-# -------------------------------------------------------------------------------
-#   This file is part of Ranger.
+﻿# -------------------------------------------------------------------------------
+#   This file is part of CrazyForest.
 #
-# Ranger is free software: you can redistribute it and/or modify
+# CrazyForest is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Ranger is distributed in the hope that it will be useful,
+# CrazyForest is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ranger. If not, see <http://www.gnu.org/licenses/>.
+# along with CrazyForest. If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by:
 #
-#   Marvin N. Wright
-# Institut fuer Medizinische Biometrie und Statistik
-# Universitaet zu Luebeck
-# Ratzeburger Allee 160
-# 23562 Luebeck
+#   Javier Pérez-Rodríguez
+# Universidad de CÃ³rdoba
+# Spain
+
+
 # Germany
 #
-# http://www.imbs-luebeck.de
+# javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
 # Convert integer to factor
@@ -73,7 +73,7 @@ largest.quantile <- function(formula) {
   names(sort(quantiles))
 }
 
-# Convert ranger object from version <0.11.5 (without x/y interface)
+# Convert crazyforest object from version <0.11.5 (without x/y interface)
 convert.pre.xy <- function(forest, trees = 1:forest$num.trees) {
   if (is.null(forest$status.varID)) {
     # Not survival
@@ -92,5 +92,6 @@ convert.pre.xy <- function(forest, trees = 1:forest$num.trees) {
   }
   return(forest)
 }
+
 
 

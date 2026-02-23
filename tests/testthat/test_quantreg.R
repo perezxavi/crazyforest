@@ -1,7 +1,7 @@
-library(ranger)
-context("ranger_quantreg")
+library(crazyforest)
+context("crazyforest_quantreg")
 
-rf.quant <- ranger(mpg ~ ., mtcars[1:26, ], quantreg = TRUE, 
+rf.quant <- crazyforest(mpg ~ ., mtcars[1:26, ], quantreg = TRUE, 
                    keep.inbag = TRUE, num.trees = 500)
 pred.quant <- predict(rf.quant, mtcars[27:32, ], type = "quantiles")
 
@@ -30,20 +30,20 @@ test_that("Working for single new observation", {
 
 test_that("Working for constant variables", {
   dat <- data.frame(x1 = 1, x2 = seq(1,10), y = seq(1,10))
-  rf <- ranger(y ~ ., dat, quantreg = TRUE)
+  rf <- crazyforest(y ~ ., dat, quantreg = TRUE)
   expect_silent(predict(rf, dat, type = "quantiles"))
 })
 
 test_that("Error message if no regression forest", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5)
   expect_error(predict(rf, iris, type = "quantiles"), 
                "Error\\: Quantile prediction implemented only for regression outcomes\\.")
 })
 
 test_that("Error message if not grown with quantreg=TRUE", {
-  rf <- ranger(mpg ~ ., mtcars[1:26, ], quantreg = FALSE, num.trees = 50)
+  rf <- crazyforest(mpg ~ ., mtcars[1:26, ], quantreg = FALSE, num.trees = 50)
   expect_error(predict(rf, mtcars[27:32, ], type = "quantiles"), 
-               "Error\\: Set quantreg\\=TRUE in ranger\\(\\.\\.\\.\\) for quantile prediction\\.")
+               "Error\\: Set quantreg\\=TRUE in crazyforest\\(\\.\\.\\.\\) for quantile prediction\\.")
 })
 
 test_that("User specified function works as expected", {
@@ -52,11 +52,11 @@ test_that("User specified function works as expected", {
 })
 
 test_that("Working for factor variables", {
-  expect_silent(rf <- ranger(Sepal.Length ~ ., iris, quantreg = TRUE))
+  expect_silent(rf <- crazyforest(Sepal.Length ~ ., iris, quantreg = TRUE))
   expect_silent(predict(rf, iris, type = "quantiles"))
 })
 
 test_that("Working for unordered factor variables", {
-  expect_silent(rf <- ranger(Sepal.Length ~ ., iris, quantreg = TRUE, respect.unordered.factors = "order"))
+  expect_silent(rf <- crazyforest(Sepal.Length ~ ., iris, quantreg = TRUE, respect.unordered.factors = "order"))
   expect_silent(predict(rf, iris, type = "quantiles"))
 })

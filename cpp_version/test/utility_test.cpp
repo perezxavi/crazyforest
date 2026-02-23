@@ -5,7 +5,7 @@
 #include "gtest/gtest.h"
 #include "utility.h"
 
-using namespace ranger;
+using namespace crazyforest;
 
 // Split 0..9 in 1 part
 TEST(equalSplit, onePart) {

@@ -1,5 +1,5 @@
-library(ranger)
-context("ranger_poisson")
+library(crazyforest)
+context("crazyforest_poisson")
 
 # Generate poisson distributed outcome
 set.seed(42)
@@ -34,34 +34,34 @@ test_that("poisson splitting works on poisson distributed data", {
   n_test = (max(n_train)+1):n
   df_train = df[n_train, ]
   df_test = df[n_test, ]
-  rf_poi <- ranger(y ~ ., df_train, splitrule = "poisson", num.trees = 50, min.node.size = 50, poisson.tau = 1, seed = 123)
-  rf_mse <- ranger(y ~ ., df_train, splitrule = "variance", num.trees = 50, min.node.size = 50, seed = 123)
+  rf_poi <- crazyforest(y ~ ., df_train, splitrule = "poisson", num.trees = 50, min.node.size = 50, poisson.tau = 1, seed = 123)
+  rf_mse <- crazyforest(y ~ ., df_train, splitrule = "variance", num.trees = 50, min.node.size = 50, seed = 123)
   
-  expect_is(rf_poi, "ranger")
+  expect_is(rf_poi, "crazyforest")
   # deviance on test set
   expect_lt(poisson_deviance(df_test$y, predict(rf_poi, df_test)$predictions),
             poisson_deviance(df_test$y, predict(rf_mse, df_test)$predictions))
 })
 
 test_that("poisson splitting not working for negative outcome", {
-  expect_error(ranger(y ~ ., data.frame(y = c(-1.5, 2), x = c(1, 2)), splitrule = "poisson"))
-  expect_error(ranger(y ~ ., data.frame(y = c(0, 0), x = c(1, 2)), splitrule = "poisson"))
+  expect_error(crazyforest(y ~ ., data.frame(y = c(-1.5, 2), x = c(1, 2)), splitrule = "poisson"))
+  expect_error(crazyforest(y ~ ., data.frame(y = c(0, 0), x = c(1, 2)), splitrule = "poisson"))
 })
 
 test_that("poisson.tau <= 0 throws error", {
-  expect_error(ranger(y ~ ., df2, poisson.tau = 0))
+  expect_error(crazyforest(y ~ ., df2, poisson.tau = 0))
 })
 
 test_that("poisson splitting predicts positive even on nodes with all values equal 0", {
-  rf <- ranger(y ~ ., df2, splitrule = "poisson", poisson.tau = 0.1, mtry = 2, num.trees = 2,
+  rf <- crazyforest(y ~ ., df2, splitrule = "poisson", poisson.tau = 0.1, mtry = 2, num.trees = 2,
                min.node.size = 1, seed = 123)
   expect_true(all(c(predict(rf, df2, predict.all = TRUE)$predictions) > 0))
 })
 
 test_that("poisson splitting gives larger predictions for larger values of poisson.tau on pure nodes with y = 0", {
-  rf1 <- ranger(y ~ ., df2, splitrule = "poisson", poisson.tau = 0.1, mtry = 2, num.trees = 2,
+  rf1 <- crazyforest(y ~ ., df2, splitrule = "poisson", poisson.tau = 0.1, mtry = 2, num.trees = 2,
                min.node.size = 1, seed = 123)
-  rf2 <- ranger(y ~ ., df2, splitrule = "poisson", poisson.tau = 10, mtry = 2, num.trees = 2,
+  rf2 <- crazyforest(y ~ ., df2, splitrule = "poisson", poisson.tau = 10, mtry = 2, num.trees = 2,
                min.node.size = 1, seed = 123)
   expect_true(all(predict(rf2, df2)$predictions[df2$y == 0] > predict(rf1, df2)$predictions[df2$y == 0]))
 })

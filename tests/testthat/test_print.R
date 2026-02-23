@@ -1,21 +1,21 @@
 ## Tests for print function
 
-library(ranger)
-context("ranger_print")
+library(crazyforest)
+context("crazyforest_print")
 
 ## Initialize the random forest
-rf <- ranger(Species ~ ., iris, num.trees = 5, write.forest = TRUE)
+rf <- crazyforest(Species ~ ., iris, num.trees = 5, write.forest = TRUE)
 
-## Test print ranger function
-expect_that(print(rf), prints_text("Ranger result"))
+## Test print crazyforest function
+expect_that(print(rf), prints_text("CrazyForest result"))
 
 ## Test print forest function
-expect_that(print(rf$forest), prints_text("Ranger forest object"))
+expect_that(print(rf$forest), prints_text("CrazyForest forest object"))
 
 ## Test print prediction function
-expect_that(print(predict(rf, iris)), prints_text("Ranger prediction"))
+expect_that(print(predict(rf, iris)), prints_text("CrazyForest prediction"))
 
-## Test str ranger function
+## Test str crazyforest function
 expect_that(str(rf), prints_text("List of 16"))
 
 ## Test str forest function

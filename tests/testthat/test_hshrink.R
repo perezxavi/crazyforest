@@ -1,21 +1,21 @@
 ## Tests for hierarchical shrinkage
 
-library(ranger)
-context("ranger_hshrink")
+library(crazyforest)
+context("crazyforest_hshrink")
 
 ## Tests
 test_that("hierarchical shrinkage gives an error when node.stats=FALSE", {
-  rf <- ranger(Sepal.Length ~ ., iris, num.trees = 1, node.stats = FALSE)
+  rf <- crazyforest(Sepal.Length ~ ., iris, num.trees = 1, node.stats = FALSE)
   expect_error(hshrink(rf, lambda = 5))
 })
 
 test_that("hierarchical shrinkage does not work for hard classification", {
-  rf <- ranger(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = FALSE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = FALSE)
   expect_error(hshrink(rf, lambda = 5))
 })
 
 test_that("hierarchical shrinkage with lambda=0 doesn't change leafs and prediction, regression", {
-  rf <- ranger(Sepal.Length ~ ., iris, num.trees = 1, node.stats = TRUE)
+  rf <- crazyforest(Sepal.Length ~ ., iris, num.trees = 1, node.stats = TRUE)
   split_values_before <- rf$forest$split.values[[1]]
   pred_before <- predict(rf, iris)$predictions
   hshrink(rf, lambda = 0)
@@ -26,7 +26,7 @@ test_that("hierarchical shrinkage with lambda=0 doesn't change leafs and predict
 })
 
 test_that("hierarchical shrinkage with lambda=0 doesn't change leafs and prediction, probability", {
-  rf <- ranger(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = TRUE)
   class_freq_before <- simplify2array(rf$forest$terminal.class.counts[[1]])
   pred_before <- predict(rf, iris)$predictions
   hshrink(rf, lambda = 0)
@@ -37,7 +37,7 @@ test_that("hierarchical shrinkage with lambda=0 doesn't change leafs and predict
 })
 
 test_that("hierarchical shrinkage with lambda>0 does change leafs and prediction, regression", {
-  rf <- ranger(Sepal.Length ~ ., iris, num.trees = 1, replace = FALSE, sample.fraction = 1, node.stats = TRUE)
+  rf <- crazyforest(Sepal.Length ~ ., iris, num.trees = 1, replace = FALSE, sample.fraction = 1, node.stats = TRUE)
   split_values_before <- rf$forest$split.values[[1]]
   pred_before <- predict(rf, iris)$predictions
   split_values_before[1] <- 0 # Modify to create deep copy
@@ -53,7 +53,7 @@ test_that("hierarchical shrinkage with lambda>0 does change leafs and prediction
 })
 
 test_that("hierarchical shrinkage with lambda>0 does change leafs and prediction, probability", {
-  rf <- ranger(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 1, node.stats = TRUE, probability = TRUE)
   class_freq_before <- simplify2array(rf$forest$terminal.class.counts[[1]])
   pred_before <- predict(rf, iris)$predictions
   hshrink(rf, lambda = 100)

@@ -1,4 +1,4 @@
 library(testthat)
-library(ranger)
+library(crazyforest)
 
-test_check("ranger")
+test_check("crazyforest")

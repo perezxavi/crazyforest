@@ -1,12 +1,12 @@
-library(ranger)
+library(crazyforest)
 library(survival)
-context("ranger_treeInfo")
+context("crazyforest_treeInfo")
 
 ## Classification
-rf.class.formula <- ranger(Species ~ ., iris, num.trees = 5)
-rf.class.first <- ranger(dependent.variable.name = "Species", data = iris[, c(5, 1:4)], num.trees = 5)
-rf.class.mid <- ranger(dependent.variable.name = "Species", data = iris[, c(1:2, 5, 3:4)], num.trees = 5)
-rf.class.last <- ranger(dependent.variable.name = "Species", data = iris, num.trees = 5)
+rf.class.formula <- crazyforest(Species ~ ., iris, num.trees = 5)
+rf.class.first <- crazyforest(dependent.variable.name = "Species", data = iris[, c(5, 1:4)], num.trees = 5)
+rf.class.mid <- crazyforest(dependent.variable.name = "Species", data = iris[, c(1:2, 5, 3:4)], num.trees = 5)
+rf.class.last <- crazyforest(dependent.variable.name = "Species", data = iris, num.trees = 5)
 
 ti.class.formula <- treeInfo(rf.class.formula)
 ti.class.first <- treeInfo(rf.class.first)
@@ -53,7 +53,7 @@ test_that("Prediction for classification is factor with correct levels", {
 
 test_that("Prediction for classification is same as class prediction", {
   dat <- iris[sample(nrow(iris)), ]
-  rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
                replace = FALSE, sample.fraction = 1)
   pred_class <- predict(rf, dat)$predictions
   nodes <- predict(rf, dat, type = "terminalNodes")$predictions[, 1]
@@ -67,7 +67,7 @@ test_that("Prediction for classification is same as class prediction", {
 test_that("Prediction for classification is same as class prediction, new factor", {
   dat <- iris[sample(nrow(iris)), ]
   dat$Species <- factor(dat$Species, levels = sample(levels(dat$Species)))
-  rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
                replace = FALSE, sample.fraction = 1)
   pred_class <- predict(rf, dat)$predictions
   nodes <- predict(rf, dat, type = "terminalNodes")$predictions[, 1]
@@ -80,7 +80,7 @@ test_that("Prediction for classification is same as class prediction, new factor
 
 test_that("Prediction for classification is same as class prediction, unused factor levels", {
   dat <- iris[c(101:150, 51:100), ]
-  expect_warning(rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  expect_warning(rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
     replace = FALSE, sample.fraction = 1))
   pred_class <- predict(rf, dat)$predictions
   nodes <- predict(rf, dat, type = "terminalNodes")$predictions[, 1]
@@ -93,7 +93,7 @@ test_that("Prediction for classification is same as class prediction, unused fac
 
 test_that("Prediction for probability is same as probability prediction", {
   dat <- iris[sample(nrow(iris)), ]
-  rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
                sample.fraction = 1, replace = FALSE, probability = TRUE)
   ti <- treeInfo(rf)
   pred_prob <- predict(rf, dat)$predictions
@@ -108,7 +108,7 @@ test_that("Prediction for probability is same as probability prediction", {
 test_that("Prediction for probability is same as probability prediction, new factor", {
   dat <- iris[sample(nrow(iris)), ]
   dat$Species <- factor(dat$Species, levels = sample(levels(dat$Species)))
-  rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
                sample.fraction = 1, replace = FALSE, probability = TRUE)
   ti <- treeInfo(rf)
   pred_prob <- predict(rf, dat)$predictions
@@ -123,7 +123,7 @@ test_that("Prediction for probability is same as probability prediction, new fac
 test_that("Prediction for probability is same as probability prediction, unused factor levels", {
   dat <- iris[c(101:150, 51:100), ]
   dat$Species <- factor(dat$Species, levels = sample(levels(dat$Species)))
-  expect_warning(rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 1, 
+  expect_warning(rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 1, 
     sample.fraction = 1, replace = FALSE, probability = TRUE))
   ti <- treeInfo(rf)
   pred_prob <- predict(rf, dat)$predictions
@@ -136,7 +136,7 @@ test_that("Prediction for probability is same as probability prediction, unused 
 })
 
 test_that("Prediction for matrix classification is integer with correct values", {
-  rf <- ranger(dependent.variable.name = "Species", data = data.matrix(iris), 
+  rf <- crazyforest(dependent.variable.name = "Species", data = data.matrix(iris), 
                num.trees = 5, classification = TRUE)
   ti <- treeInfo(rf, 1)
   expect_is(ti$prediction, "numeric")
@@ -149,10 +149,10 @@ dat <- data.frame(y = rnorm(n),
                   replicate(2, runif(n)), 
                   replicate(2, rbinom(n, size = 1, prob = .5)))
 
-rf.regr.formula <- ranger(y ~ ., dat, num.trees = 5)
-rf.regr.first <- ranger(dependent.variable.name = "y", data = dat, num.trees = 5)
-rf.regr.mid <- ranger(dependent.variable.name = "y", data = dat[, c(2:3, 1, 4:5)], num.trees = 5)
-rf.regr.last <- ranger(dependent.variable.name = "y", data = dat[, c(2:5, 1)], num.trees = 5)
+rf.regr.formula <- crazyforest(y ~ ., dat, num.trees = 5)
+rf.regr.first <- crazyforest(dependent.variable.name = "y", data = dat, num.trees = 5)
+rf.regr.mid <- crazyforest(dependent.variable.name = "y", data = dat[, c(2:3, 1, 4:5)], num.trees = 5)
+rf.regr.last <- crazyforest(dependent.variable.name = "y", data = dat[, c(2:5, 1)], num.trees = 5)
 
 ti.regr.formula <- treeInfo(rf.regr.formula)
 ti.regr.first <- treeInfo(rf.regr.first)
@@ -199,10 +199,10 @@ test_that("Prediction for regression is numeric in correct range", {
 })
 
 ## Probability estimation
-rf.prob.formula <- ranger(Species ~ ., iris, num.trees = 5, probability = TRUE)
-rf.prob.first <- ranger(dependent.variable.name = "Species", data = iris[, c(5, 1:4)], num.trees = 5, probability = TRUE)
-rf.prob.mid <- ranger(dependent.variable.name = "Species", data = iris[, c(1:2, 5, 3:4)], num.trees = 5, probability = TRUE)
-rf.prob.last <- ranger(dependent.variable.name = "Species", data = iris, num.trees = 5, probability = TRUE)
+rf.prob.formula <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE)
+rf.prob.first <- crazyforest(dependent.variable.name = "Species", data = iris[, c(5, 1:4)], num.trees = 5, probability = TRUE)
+rf.prob.mid <- crazyforest(dependent.variable.name = "Species", data = iris[, c(1:2, 5, 3:4)], num.trees = 5, probability = TRUE)
+rf.prob.last <- crazyforest(dependent.variable.name = "Species", data = iris, num.trees = 5, probability = TRUE)
 
 ti.prob.formula <- treeInfo(rf.prob.formula)
 ti.prob.first <- treeInfo(rf.prob.first)
@@ -250,7 +250,7 @@ test_that("Prediction for probability is one probability per class, sum to 1", {
 
 test_that("Prediction for probability has correct factor levels", {
   dat <- iris[c(101:150, 1:100), ]
-  rf <- ranger(dependent.variable.name = "Species", data = dat, num.trees = 5, probability = TRUE)
+  rf <- crazyforest(dependent.variable.name = "Species", data = dat, num.trees = 5, probability = TRUE)
   
   # Predict
   pred_rf <- predict(rf, dat, num.trees = 1)$predictions
@@ -266,10 +266,10 @@ test_that("Prediction for probability has correct factor levels", {
 })
 
 ## Survival
-rf.surv.formula <- ranger(Surv(time, status) ~ ., veteran, num.trees = 5)
-rf.surv.first <- ranger(dependent.variable.name = "time", status.variable.name = "status", data = veteran[, c(3:4, 1:2, 5:8)], num.trees = 5)
-rf.surv.mid <- ranger(dependent.variable.name = "time", status.variable.name = "status", data = veteran, num.trees = 5)
-rf.surv.last <- ranger(dependent.variable.name = "time", status.variable.name = "status", data = veteran[, c(2, 1, 5:8, 3:4)], num.trees = 5)
+rf.surv.formula <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5)
+rf.surv.first <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", data = veteran[, c(3:4, 1:2, 5:8)], num.trees = 5)
+rf.surv.mid <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", data = veteran, num.trees = 5)
+rf.surv.last <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", data = veteran[, c(2, 1, 5:8, 3:4)], num.trees = 5)
 
 ti.surv.formula <- treeInfo(rf.surv.formula)
 ti.surv.first <- treeInfo(rf.surv.first)
@@ -311,8 +311,8 @@ test_that("No prediction for Survival", {
 
 ## General
 test_that("Error if no saved forest", {
-  expect_error(treeInfo(ranger(Species ~ ., iris, write.forest = FALSE)), 
-               "Error\\: No saved forest in ranger object\\. Please set write.forest to TRUE when calling ranger\\.")
+  expect_error(treeInfo(crazyforest(Species ~ ., iris, write.forest = FALSE)), 
+               "Error\\: No saved forest in crazyforest object\\. Please set write.forest to TRUE when calling crazyforest\\.")
 })
 
 ## Unordered splitting
@@ -321,7 +321,7 @@ test_that("Spitting value is comma separated list for partition splitting", {
   dat <- data.frame(x = sample(c("A", "B", "C", "D", "E"), n, replace = TRUE), 
                     y = rbinom(n, 1, 0.5), 
                     stringsAsFactors = FALSE)
-  rf.partition <- ranger(y ~ ., dat, num.trees = 5, respect.unordered.factors = "partition")
+  rf.partition <- crazyforest(y ~ ., dat, num.trees = 5, respect.unordered.factors = "partition")
   ti.partition <- treeInfo(rf.partition)
   
   expect_is(ti.partition$splitval, "character")
@@ -330,7 +330,7 @@ test_that("Spitting value is comma separated list for partition splitting", {
 
 test_that("Spitting value is numeric for order splitting", {
   set.seed(100)
-  rf.order <- ranger(Sepal.Length ~ ., iris, num.trees = 5, respect.unordered.factors = "order")
+  rf.order <- crazyforest(Sepal.Length ~ ., iris, num.trees = 5, respect.unordered.factors = "order")
   ti.order <- treeInfo(rf.order)
   expect_is(ti.order$splitval[!ti.order$terminal & ti.order$splitvarName == "Species"], "numeric")
 })
@@ -339,13 +339,13 @@ test_that("treeInfo works for 31 unordered factor levels but not for 32", {
   n <- 31
   dt <- data.frame(x = factor(1:n, ordered = FALSE),  
                    y = rbinom(n, 1, 0.5))
-  rf <- ranger(y ~ ., data = dt, num.trees = 10, splitrule = "extratrees")
+  rf <- crazyforest(y ~ ., data = dt, num.trees = 10, splitrule = "extratrees")
   expect_silent(treeInfo(rf))
   
   n <- 32
   dt <- data.frame(x = factor(1:n, ordered = FALSE),  
                    y = rbinom(n, 1, 0.5))
-  rf <- ranger(y ~ ., data = dt, num.trees = 10, splitrule = "extratrees")
+  rf <- crazyforest(y ~ ., data = dt, num.trees = 10, splitrule = "extratrees")
   expect_warning(treeInfo(rf), "Unordered splitting levels can only be shown for up to 31 levels.")
 })
 

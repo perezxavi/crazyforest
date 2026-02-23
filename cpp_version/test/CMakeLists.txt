@@ -1,4 +1,4 @@
-project(ranger_test)
+project(crazyforest_test)
 cmake_minimum_required(VERSION 2.0)
 
 ## ======================================================================================##
@@ -11,7 +11,7 @@ set_target_properties(${TARGET} PROPERTIES COMPILE_FLAGS -pthread)
 ## Dependencies
 ## ======================================================================================##
 include_directories(../src ../src/utility ../src/Forest ../src/Tree)
-add_subdirectory(../ ranger_build)
+add_subdirectory(../ crazyforest_build)
 
 ## ======================================================================================##
 ## Subdirectories and source files
@@ -19,7 +19,7 @@ add_subdirectory(../ ranger_build)
 file(GLOB TEST_SOURCES *.cpp)
 file(GLOB_RECURSE RG_SOURCES ../src/*.cpp)
 
-## Remove main file from ranger
+## Remove main file from crazyforest
 get_filename_component(MAIN_FILE . ABSOLUTE)
 SET(MAIN_FILE "${MAIN_FILE}/../src/main.cpp")
 list(REMOVE_ITEM RG_SOURCES "${MAIN_FILE}")
@@ -39,6 +39,6 @@ add_test(runUnitTests runUnitTests)
 ## Executable
 ## ======================================================================================##
 add_executable(runUnitTests ${SOURCES})
-add_dependencies(runUnitTests ranger)
+add_dependencies(runUnitTests crazyforest)
 target_link_libraries(runUnitTests gtest gtest_main)
 

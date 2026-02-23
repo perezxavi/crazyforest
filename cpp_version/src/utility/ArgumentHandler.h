@@ -1,12 +1,12 @@
 /*-------------------------------------------------------------------------------
-This file is part of ranger.
+This file is part of crazyforest.
 
-Copyright (c) [2014-2018] [Marvin N. Wright]
+Copyright (c) [2014-2018] [Javier Pérez-Rodríguez]
 
 This software may be modified and distributed under the terms of the MIT license.
 
-Please note that the C++ core of ranger is distributed under MIT license and the
-R package "ranger" under GPL3 license.
+Please note that the C++ core of crazyforest is distributed under MIT license and the
+R package "crazyforest" under GPL3 license.
 #-------------------------------------------------------------------------------*/
 
 #ifndef ARGUMENTHANDLER_H_
@@ -18,7 +18,7 @@ R package "ranger" under GPL3 license.
 
 #include "globals.h"
 
-namespace ranger {
+namespace crazyforest {
 
 /*
  * Encapsulate getopt.
@@ -96,6 +96,6 @@ private:
   char** argv;
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* ARGUMENTHANDLER_H_ */

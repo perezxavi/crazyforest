@@ -1,35 +1,37 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license
+ and the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
-#include <memory>
 
-#include "globals.h"
+
 #include "ArgumentHandler.h"
 #include "ForestClassification.h"
+#include "ForestProbability.h"
 #include "ForestRegression.h"
 #include "ForestSurvival.h"
-#include "ForestProbability.h"
+#include "globals.h"
 #include "utility.h"
 
-using namespace ranger;
 
-void run_ranger(const ArgumentHandler& arg_handler, std::ostream& verbose_out) {
-  verbose_out << "Starting Ranger." << std::endl;
+using namespace crazyforest;
+
+void run_crazyforest(const ArgumentHandler &arg_handler,
+                     std::ostream &verbose_out) {
+  verbose_out << "Starting CrazyForest." << std::endl;
 
   // Create forest object
-  std::unique_ptr<Forest> forest { };
+  std::unique_ptr<Forest> forest{};
   switch (arg_handler.treetype) {
   case TREE_CLASSIFICATION:
     if (arg_handler.probability) {
@@ -49,21 +51,27 @@ void run_ranger(const ArgumentHandler& arg_handler, std::ostream& verbose_out) {
     break;
   }
 
-  // Call Ranger
-  forest->initCpp(arg_handler.depvarname, arg_handler.memmode, arg_handler.file, arg_handler.mtry,
-      arg_handler.outprefix, arg_handler.ntree, &verbose_out, arg_handler.seed, arg_handler.nthreads,
-      arg_handler.predict, arg_handler.impmeasure, arg_handler.targetpartitionsize, arg_handler.minbucket, arg_handler.splitweights,
-      arg_handler.alwayssplitvars, arg_handler.statusvarname, arg_handler.replace, arg_handler.catvars,
-      arg_handler.savemem, arg_handler.splitrule, arg_handler.caseweights, arg_handler.predall, arg_handler.fraction,
-      arg_handler.alpha, arg_handler.minprop, arg_handler.tau, arg_handler.holdout, arg_handler.predictiontype,
-      arg_handler.randomsplits, arg_handler.maxdepth, arg_handler.regcoef, arg_handler.usedepth);
+  // Call CrazyForest
+  forest->initCpp(
+      arg_handler.depvarname, arg_handler.memmode, arg_handler.file,
+      arg_handler.mtry, arg_handler.outprefix, arg_handler.ntree, &verbose_out,
+      arg_handler.seed, arg_handler.nthreads, arg_handler.predict,
+      arg_handler.impmeasure, arg_handler.targetpartitionsize,
+      arg_handler.minbucket, arg_handler.splitweights,
+      arg_handler.alwayssplitvars, arg_handler.statusvarname,
+      arg_handler.replace, arg_handler.catvars, arg_handler.savemem,
+      arg_handler.splitrule, arg_handler.caseweights, arg_handler.predall,
+      arg_handler.fraction, arg_handler.alpha, arg_handler.minprop,
+      arg_handler.tau, arg_handler.holdout, arg_handler.predictiontype,
+      arg_handler.randomsplits, arg_handler.maxdepth, arg_handler.regcoef,
+      arg_handler.usedepth);
 
   forest->run(true, !arg_handler.skipoob);
   if (arg_handler.write) {
     forest->saveToFile();
   }
   forest->writeOutput();
-  verbose_out << "Finished Ranger." << std::endl;
+  verbose_out << "Finished CrazyForest." << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -77,16 +85,17 @@ int main(int argc, char **argv) {
     arg_handler.checkArguments();
 
     if (arg_handler.verbose) {
-      run_ranger(arg_handler, std::cout);
+      run_crazyforest(arg_handler, std::cout);
     } else {
-      std::ofstream logfile { arg_handler.outprefix + ".log" };
+      std::ofstream logfile{arg_handler.outprefix + ".log"};
       if (!logfile.good()) {
         throw std::runtime_error("Could not write to logfile.");
       }
-      run_ranger(arg_handler, logfile);
+      run_crazyforest(arg_handler, logfile);
     }
-  } catch (std::exception& e) {
-    std::cerr << "Error: " << e.what() << " Ranger will EXIT now." << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << "Error: " << e.what() << " CrazyForest will EXIT now."
+              << std::endl;
     return -1;
   }
 

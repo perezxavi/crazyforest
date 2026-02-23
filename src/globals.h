@@ -1,18 +1,19 @@
 /*-------------------------------------------------------------------------------
-This file is part of ranger.
+This file is part of crazyforest.
 
-Copyright (c) [2014-2018] [Marvin N. Wright]
+Copyright (c) [2014-2018] [Javier Pérez-Rodríguez]
 
-This software may be modified and distributed under the terms of the MIT license.
+This software may be modified and distributed under the terms of the MIT
+license.
 
-Please note that the C++ core of ranger is distributed under MIT license and the
-R package "ranger" under GPL3 license.
+Please note that the C++ core of crazyforest is distributed under MIT license and the
+R package "crazyforest" under GPL3 license.
 #-------------------------------------------------------------------------------*/
 
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
 
-namespace ranger {
+namespace crazyforest {
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -29,16 +30,12 @@ enum TreeType {
 };
 
 // Memory modes
-enum MemoryMode {
-  MEM_DOUBLE = 0,
-  MEM_FLOAT = 1,
-  MEM_CHAR = 2
-};
+enum MemoryMode { MEM_DOUBLE = 0, MEM_FLOAT = 1, MEM_CHAR = 2 };
 const uint MAX_MEM_MODE = 2;
 
 // Mask and Offset to store 2 bit values in bytes
-static const int mask[4] = {192,48,12,3};
-static const int offset[4] = {6,4,2,0};
+static const int mask[4] = {192, 48, 12, 3};
+static const int offset[4] = {6, 4, 2, 0};
 
 // Variable importance
 enum ImportanceMode {
@@ -61,13 +58,19 @@ enum SplitRule {
   EXTRATREES = 5,
   BETA = 6,
   HELLINGER = 7,
-  POISSON = 8
+  POISSON = 8,
+  TOTALLY_RANDOM = 9,
+  CHAOS_SPLIT = 10
 };
 
 // Prediction type
-enum PredictionType {
-  RESPONSE = 1,
-  TERMINALNODES = 2
+enum PredictionType { RESPONSE = 1, TERMINALNODES = 2 };
+
+// Prediction strategy
+enum PredictStrategy {
+  PREDICT_MAJORITY = 1,
+  PREDICT_ROULETTE = 2,
+  PREDICT_CORRECTED_ROULETTE = 3
 };
 
 // Default values
@@ -101,6 +104,6 @@ const double STATUS_INTERVAL = 30.0;
 // Threshold for q value split method switch
 const double Q_THRESHOLD = 0.02;
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* GLOBALS_H_ */

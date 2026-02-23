@@ -1,36 +1,36 @@
 ## Tests for inbag functions
 
-library(ranger)
-context("ranger_inbag")
+library(crazyforest)
+context("crazyforest_inbag")
 
 ## Tests
 test_that("Inbag count matrix if of right size, with replacement", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE)
   expect_equal(dim(data.frame(rf$inbag.counts)), 
               c(nrow(iris), rf$num.trees))
 })
 
 test_that("Inbag count matrix if of right size, without replacement", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, replace = FALSE, keep.inbag = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, replace = FALSE, keep.inbag = TRUE)
   expect_equal(dim(data.frame(rf$inbag.counts)), 
               c(nrow(iris), rf$num.trees))
 })
 
 test_that("Inbag count matrix if of right size, with replacement, weighted", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, case.weights = runif(nrow(iris)), keep.inbag = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, case.weights = runif(nrow(iris)), keep.inbag = TRUE)
   expect_equal(dim(data.frame(rf$inbag.counts)), 
               c(nrow(iris), rf$num.trees))
 })
 
 test_that("Inbag count matrix if of right size, without replacement, weighted", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, replace = FALSE, case.weights = runif(nrow(iris)), keep.inbag = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, replace = FALSE, case.weights = runif(nrow(iris)), keep.inbag = TRUE)
   expect_equal(dim(data.frame(rf$inbag.counts)), 
               c(nrow(iris), rf$num.trees))
 })
 
 
 test_that("Number of samples is right sample fraction, replace=FALSE, default", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE)
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -41,7 +41,7 @@ test_that("Number of samples is right sample fraction, replace=FALSE, default", 
 })
 
 test_that("Number of samples is right sample fraction, replace=FALSE, 0.3", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE, sample.fraction = 0.3)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE, sample.fraction = 0.3)
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -52,7 +52,7 @@ test_that("Number of samples is right sample fraction, replace=FALSE, 0.3", {
 })
 
 test_that("Number of samples is right sample fraction, replace=TRUE, default", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE)
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -65,7 +65,7 @@ test_that("Number of samples is right sample fraction, replace=TRUE, default", {
 })
 
 test_that("Number of samples is right sample fraction, replace=TRUE, 0.5", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE, sample.fraction = 0.5)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE, sample.fraction = 0.5)
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -78,7 +78,7 @@ test_that("Number of samples is right sample fraction, replace=TRUE, 0.5", {
 })
 
 test_that("Number of samples is right sample fraction, replace=FALSE, 0.3, weighted", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE, sample.fraction = 0.3, case.weights = runif(nrow(iris)))
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = FALSE, sample.fraction = 0.3, case.weights = runif(nrow(iris)))
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -89,7 +89,7 @@ test_that("Number of samples is right sample fraction, replace=FALSE, 0.3, weigh
 })
 
 test_that("Number of samples is right sample fraction, replace=TRUE, 0.5, weighted", {
-  rf <- ranger(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE, sample.fraction = 0.5, case.weights = runif(nrow(iris)))
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, keep.inbag = TRUE, replace = TRUE, sample.fraction = 0.5, case.weights = runif(nrow(iris)))
   num.inbag <- sapply(rf$inbag.counts, function(x) {
     sum(x > 0)
   })
@@ -103,12 +103,12 @@ test_that("Number of samples is right sample fraction, replace=TRUE, 0.5, weight
 
 test_that("Manual inbag selection selects correct observations", {
   inbag <- replicate(5, rbinom(nrow(iris), 1, .5), simplify = FALSE)
-  rf <- ranger(Species ~ ., iris, num.trees = 5, replace = FALSE, keep.inbag = TRUE, inbag = inbag)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, replace = FALSE, keep.inbag = TRUE, inbag = inbag)
   expect_equal(rf$inbag.counts, 
                inbag)
   
   inbag <- replicate(5, round(runif(nrow(iris), 0, 5)), simplify = FALSE)
-  rf <- ranger(Species ~ ., iris, num.trees = 5, replace = TRUE, keep.inbag = TRUE, inbag = inbag)
+  rf <- crazyforest(Species ~ ., iris, num.trees = 5, replace = TRUE, keep.inbag = TRUE, inbag = inbag)
   expect_equal(rf$inbag.counts, 
                inbag)
 })

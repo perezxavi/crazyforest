@@ -7,7 +7,7 @@
 holdoutRF(...)
 }
 \arguments{
-\item{...}{All arguments are passed to \code{\link{ranger}()} (except \code{importance}, \code{case.weights}, \code{replace} and \code{holdout}.).}
+\item{...}{All arguments are passed to \code{\link{crazyforest}()} (except \code{importance}, \code{case.weights}, \code{replace} and \code{holdout}.).}
 }
 \value{
 Hold-out random forests with variable importance.
@@ -21,8 +21,8 @@ Related to the novel permutation variable importance by Janitza et al. (2015).
 Janitza, S., Celik, E. & Boulesteix, A.-L., (2015). A computationally fast variable importance test for random forests for high-dimensional data. Adv Data Anal Classif \doi{10.1007/s11634-016-0276-4}. \cr
 }
 \seealso{
-\code{\link{ranger}}
+\code{\link{crazyforest}}
 }
 \author{
-Marvin N. Wright
+Javier Pérez-Rodríguez
 }

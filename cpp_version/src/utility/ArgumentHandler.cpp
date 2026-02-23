@@ -1,12 +1,10 @@
-/*-------------------------------------------------------------------------------
- This file is part of ranger.
-
- Copyright (c) [2014-2018] [Marvin N. Wright]
+﻿/*-------------------------------------------------------------------------------
+ This file is part of crazyforest.
 
  This software may be modified and distributed under the terms of the MIT license.
 
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and the
+ R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 #include <fstream>
@@ -17,14 +15,14 @@
 #include "version.h"
 #include "utility.h"
 
-namespace ranger {
+namespace crazyforest {
 
 ArgumentHandler::ArgumentHandler(int argc, char **argv) :
     caseweights(""), depvarname(""), fraction(0), holdout(false), memmode(MEM_DOUBLE), savemem(false), skipoob(false), predict(
         ""), predictiontype(DEFAULT_PREDICTIONTYPE), randomsplits(DEFAULT_NUM_RANDOM_SPLITS), splitweights(""), tau(DEFAULT_POISSON_TAU), nthreads(
         DEFAULT_NUM_THREADS), predall(false), alpha(DEFAULT_ALPHA), minprop(DEFAULT_MINPROP), maxdepth(
         DEFAULT_MAXDEPTH), file(""), impmeasure(DEFAULT_IMPORTANCE_MODE), targetpartitionsize(0), minbucket(0), mtry(0), outprefix(
-        "ranger_out"), probability(false), splitrule(DEFAULT_SPLITRULE), statusvarname(""), ntree(DEFAULT_NUM_TREE), replace(
+        "crazyforest_out"), probability(false), splitrule(DEFAULT_SPLITRULE), statusvarname(""), ntree(DEFAULT_NUM_TREE), replace(
         true), verbose(false), write(false), treetype(TREE_CLASSIFICATION), seed(0), usedepth(false) {
   this->argc = argc;
   this->argv = argv;
@@ -724,17 +722,17 @@ void ArgumentHandler::displayHelp() {
 }
 
 void ArgumentHandler::displayVersion() {
-  std::cout << "Ranger version: " << RANGER_VERSION << std::endl;
+  std::cout << "CrazyForest version: " << crazyforest_VERSION << std::endl;
   std::cout << std::endl;
-  std::cout << "Please cite Ranger: " << std::endl;
+  std::cout << "Please cite CrazyForest: " << std::endl;
   std::cout
-      << "Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software 77:1-17."
+      << "Wright, M. N. & Ziegler, A. (2017). crazyforest: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software 77:1-17."
       << std::endl;
   std::cout << std::endl;
   std::cout << "BibTeX:" << std::endl;
   std::cout << "@Article{," << std::endl;
   std::cout
-      << "    title = {{ranger}: A Fast Implementation of Random Forests for High Dimensional Data in {C++} and {R},"
+      << "    title = {{crazyforest}: A Fast Implementation of Random Forests for High Dimensional Data in {C++} and {R},"
       << std::endl;
   std::cout << "    author = {Wright, Marvin N. and Ziegler, Andreas}," << std::endl;
   std::cout << "    journal = {Journal of Statistical Software}," << std::endl;
@@ -745,4 +743,5 @@ void ArgumentHandler::displayVersion() {
   std::cout << "}" << std::endl;
 }
 
-} // namespace ranger
+} // namespace crazyforest
+

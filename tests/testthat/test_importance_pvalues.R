@@ -1,4 +1,4 @@
-library(ranger)
+library(crazyforest)
 library(survival)
 
 context("importance_pvalues")
@@ -9,7 +9,7 @@ if (requireNamespace("GenABEL", quietly = TRUE)) {
 }
 
 ## 0 noise variables
-rf_p0 <- ranger(Species ~., iris, num.trees = 5, 
+rf_p0 <- crazyforest(Species ~., iris, num.trees = 5, 
                 importance = "permutation", write.forest = TRUE)
 holdout_p0 <- holdoutRF(Species ~., iris, num.trees = 5)
 
@@ -20,13 +20,13 @@ noise <- replicate(p, rnorm(n))
 colnames(noise) <- paste0("noise", 1:p)
 dat_n100 <- cbind(iris, noise)
 
-rf_p100 <- ranger(Species ~., dat_n100, num.trees = 5,
+rf_p100 <- crazyforest(Species ~., dat_n100, num.trees = 5,
                   importance = "permutation", write.forest = TRUE)
 holdout_p100 <- holdoutRF(Species ~., dat_n100, num.trees = 5)
 
 ## General
 test_that("Importance p-values Janitza: Error if impurity importance", {
-  rf <- ranger(Species ~., iris, num.trees = 5, importance = "impurity")
+  rf <- crazyforest(Species ~., iris, num.trees = 5, importance = "impurity")
   expect_error(importance_pvalues(rf, method = "janitza"))
 })
 
@@ -42,12 +42,12 @@ test_that("Importance p-values Janitza: returns correct dimensions", {
 })
 
 test_that("Importance p-values Janitza: error if no importance", {
-  rf_none <- ranger(Species ~., iris, num.trees = 5, importance = "none", write.forest = TRUE)
+  rf_none <- crazyforest(Species ~., iris, num.trees = 5, importance = "none", write.forest = TRUE)
   expect_error(importance_pvalues(rf_none, method = "janitza"))
 })
   
 test_that("Importance p-values Janitza: error if Gini importance", {
-  rf_imp <- ranger(Species ~., iris, num.trees = 5, importance = "impurity", write.forest = TRUE)
+  rf_imp <- crazyforest(Species ~., iris, num.trees = 5, importance = "impurity", write.forest = TRUE)
   expect_error(importance_pvalues(rf_imp, method = "janitza"))
 })
 
@@ -59,7 +59,7 @@ test_that("Importance p-values Janitza: error if no unimportant variables", {
 })
 
 test_that("Importance p-values Janitza: warning for regression", {
-  rf <- ranger(Sepal.Length ~., dat_n100, num.trees = 5, importance = "permutation", write.forest = TRUE)
+  rf <- crazyforest(Sepal.Length ~., dat_n100, num.trees = 5, importance = "permutation", write.forest = TRUE)
   expect_warning(importance_pvalues(rf, method = "janitza"))
 })
 
@@ -77,7 +77,7 @@ test_that("Importance p-values Altmann: returns correct dimensions", {
 })
 
 test_that("Importance p-values Altmann: error if no importance", {
-  rf_none <- ranger(Species ~., iris, num.trees = 5, importance = "none", write.forest = TRUE)
+  rf_none <- crazyforest(Species ~., iris, num.trees = 5, importance = "none", write.forest = TRUE)
   expect_error(importance_pvalues(rf_none, method = "altmann", formula = Species ~ ., data = iris))
 })
 
@@ -145,7 +145,7 @@ test_that("HoldoutRF not working if replace argument used", {
 })
 
 ## Survival, 0 noise variables
-rf_p0_surv <- ranger(Surv(time, status) ~ ., veteran, num.trees = 5, 
+rf_p0_surv <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, 
                      importance = "permutation", write.forest = TRUE)
 #holdout_p0_surv <- holdoutRF(Surv(time, status) ~ ., veteran, num.trees = 5)
 
@@ -155,7 +155,7 @@ noise <- replicate(p, rnorm(nrow(veteran)))
 colnames(noise) <- paste0("noise", 1:p)
 dat_n100_surv <- cbind(veteran, noise)
 
-rf_p100_surv <- ranger(Surv(time, status) ~., dat_n100_surv, num.trees = 5,
+rf_p100_surv <- crazyforest(Surv(time, status) ~., dat_n100_surv, num.trees = 5,
                        importance = "permutation", write.forest = TRUE)
 #holdout_p100_surv <- holdoutRF(Surv(time, status) ~., dat_n100_surv, num.trees = 5)
 
@@ -172,7 +172,7 @@ test_that("Survival importance p-values Altmann: returns correct dimensions", {
 })
 
 test_that("Survival importance p-values Altmann working with corrected impurity importance", {
-  rf <- ranger(Surv(time, status) ~ ., veteran, num.trees = 5, 
+  rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, 
                importance = "impurity_corrected")
   
   vimp <- importance_pvalues(rf, method = "altmann", formula = Surv(time, status) ~ ., data = veteran)
@@ -181,7 +181,7 @@ test_that("Survival importance p-values Altmann working with corrected impurity 
 })
 
 test_that("Survival importance p-values Janitza working with corrected impurity importance", {
-  rf <- ranger(Surv(time, status) ~ ., dat_n100_surv, num.trees = 5, 
+  rf <- crazyforest(Surv(time, status) ~ ., dat_n100_surv, num.trees = 5, 
                importance = "impurity_corrected")
   
   expect_warning(vimp <- importance_pvalues(rf, method = "janitza"))

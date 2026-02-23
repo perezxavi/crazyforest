@@ -1,9 +1,9 @@
+﻿
+# Compute variance of estimate from a crazyforest model
 
-# Compute variance of estimate from a ranger model
-# 
-# Computes variances for a prediction from a ranger model, using the infinitesimal jackknife procedure
-# 
-# This function is a ranger-adaptation of the package \pkg{randomForestCI} of Wager et al. (2014). Their original can be found on github: \url{ https://github.com/swager/randomForestCI/}. 
+# Computes variances for a prediction from a crazyforest model, using the infinitesimal jackknife procedure
+
+# This function is a crazyforest-adaptation of the package \pkg{randomForestCI} of Wager et al. (2014). Their original can be found on github: \url{ https://github.com/swager/randomForestCI/}. 
 #
 # @param pred A nrow(newdata) by no. of trees matrix which contains numeric predictions
 #        from a random forest trained with trees grown on bootstrap samples of the training data
@@ -207,4 +207,5 @@ calibrateEB = function(vars, sigma2) {
   }
   return(calib.all)
 }
+
 

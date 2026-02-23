@@ -1,4 +1,4 @@
-^.*\.Rproj$
+﻿^.*\.Rproj$
 ^\.Rproj\.user$
 ^release$
 ^NEWS\.md$
@@ -10,8 +10,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^ranger\.Rcheck$
-^ranger.*\.tar\.gz$
-^ranger.*\.tgz$
+^crazyforest\.Rcheck$
+^crazyforest.*\.tar\.gz$
+^crazyforest.*\.tgz$
 revdep/*
 ^\.vscode$
+

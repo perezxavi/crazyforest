@@ -1,8 +1,8 @@
-library(ranger)
+library(crazyforest)
 library(survival)
 library(Matrix)
 library(methods)
-context("ranger_sparse")
+context("crazyforest_sparse")
 
 ## Iris sparse data
 iris_sparse <- Matrix(data.matrix(iris), sparse = TRUE)
@@ -23,10 +23,10 @@ dat_survival_sparse <- Matrix(dat_survival_matrix, sparse = TRUE)
 
 test_that("Same result with sparse data for iris classification", {
   set.seed(56)
-  rf1 <- ranger(data = iris_sparse, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
+  rf1 <- crazyforest(data = iris_sparse, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = iris, dependent.variable.name = "Species", num.trees = 5)
+  rf2 <- crazyforest(data = iris, dependent.variable.name = "Species", num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -37,10 +37,10 @@ test_that("Same result with sparse data for iris classification", {
 
 test_that("Same result with sparse data for iris regression", {
   set.seed(56)
-  rf1 <- ranger(data = iris_sparse, dependent.variable.name = "Sepal.Length", classification = FALSE, num.trees = 5)
+  rf1 <- crazyforest(data = iris_sparse, dependent.variable.name = "Sepal.Length", classification = FALSE, num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = iris, dependent.variable.name = "Sepal.Length", num.trees = 5)
+  rf2 <- crazyforest(data = iris, dependent.variable.name = "Sepal.Length", num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -51,10 +51,10 @@ test_that("Same result with sparse data for iris regression", {
 
 test_that("Same result with sparse data for 0/1 classification", {
   set.seed(56)
-  rf1 <- ranger(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
+  rf1 <- crazyforest(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = dat, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
+  rf2 <- crazyforest(data = dat, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -65,10 +65,10 @@ test_that("Same result with sparse data for 0/1 classification", {
 
 test_that("Same result with sparse data for 0/1 regression", {
   set.seed(56)
-  rf1 <- ranger(data = dat_sparse, dependent.variable.name = "y", classification = FALSE, num.trees = 5)
+  rf1 <- crazyforest(data = dat_sparse, dependent.variable.name = "y", classification = FALSE, num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = dat, dependent.variable.name = "y", num.trees = 5)
+  rf2 <- crazyforest(data = dat, dependent.variable.name = "y", num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -79,10 +79,10 @@ test_that("Same result with sparse data for 0/1 regression", {
 
 test_that("Same result with sparse data for 0/1 probability prediction", {
   set.seed(56)
-  rf1 <- ranger(data = dat_sparse, dependent.variable.name = "y", probability = TRUE, num.trees = 5)
+  rf1 <- crazyforest(data = dat_sparse, dependent.variable.name = "y", probability = TRUE, num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = dat, dependent.variable.name = "y", probability = TRUE, num.trees = 5)
+  rf2 <- crazyforest(data = dat, dependent.variable.name = "y", probability = TRUE, num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -93,10 +93,10 @@ test_that("Same result with sparse data for 0/1 probability prediction", {
 
 test_that("Same result with sparse data for survival", {
   set.seed(56)
-  rf1 <- ranger(data = dat_survival_sparse, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
+  rf1 <- crazyforest(data = dat_survival_sparse, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
   
   set.seed(56)
-  rf2 <- ranger(data = dat_survival, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
+  rf2 <- crazyforest(data = dat_survival, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
   
   expect_equal(rf1$prediction.error, rf2$prediction.error)
   
@@ -106,7 +106,7 @@ test_that("Same result with sparse data for survival", {
 })
 
 test_that("Survival prediction is the same with or without outcome in prediction data", {
-  rf <- ranger(data = dat_survival_sparse, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
+  rf <- crazyforest(data = dat_survival_sparse, dependent.variable.name = "time", status.variable.name = "status", num.trees = 5)
 
   pred1 <- predict(rf, dat_survival_sparse)$survival  
   pred2 <- predict(rf, dat_survival_sparse[, c(-6, -7)])$survival  
@@ -122,12 +122,12 @@ test_that("Prediction is the same if training or testing data is sparse", {
   test_sparse <- Matrix(data.matrix(test), sparse = TRUE)
   
   set.seed(42)
-  rf1 <- ranger(data = train, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
+  rf1 <- crazyforest(data = train, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
   pred1 <- predict(rf1, test)
   pred1_sparse <- predict(rf1, test_sparse)
   
   set.seed(42)
-  rf2 <- ranger(data = train_sparse, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
+  rf2 <- crazyforest(data = train_sparse, dependent.variable.name = "Species", classification = TRUE, num.trees = 5)
   pred2 <- predict(rf2, test)
   pred2_sparse <- predict(rf2, test_sparse)
   
@@ -137,22 +137,22 @@ test_that("Prediction is the same if training or testing data is sparse", {
 })
 
 test_that("Sparse probability prediction works correctly", {
-  rf <- ranger(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, probability = TRUE, num.trees = 5)
+  rf <- crazyforest(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, probability = TRUE, num.trees = 5)
   pred <- predict(rf, dat_sparse)
   expect_equal(dim(pred$predictions), c(nrow(dat_sparse), 2))
 })
 
 test_that("Corrected importance working for sparse data", {
-  rf <- ranger(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, 
+  rf <- crazyforest(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, 
                num.trees = 5, importance = "impurity_corrected")
   expect_equal(names(rf$variable.importance), colnames(dat_sparse)[-1])
 })
 
 test_that("Sample size output is correct for sparse data", {
-  rf <- ranger(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
+  rf <- crazyforest(data = dat_sparse, dependent.variable.name = "y", classification = TRUE, num.trees = 5)
   expect_equal(rf$num.samples, nrow(dat_sparse))
   
-  rf <- ranger(x = dat_sparse[, -1], y = as.factor(y), num.trees = 5)
+  rf <- crazyforest(x = dat_sparse[, -1], y = as.factor(y), num.trees = 5)
   expect_equal(rf$num.samples, nrow(dat_sparse))
 })
 

@@ -1,4 +1,4 @@
-library(ranger)
+library(crazyforest)
 library(survival)
 
 context("case-specific RF")

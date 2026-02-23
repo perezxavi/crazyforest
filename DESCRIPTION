@@ -1,13 +1,13 @@
-Package: ranger
+Package: crazyforest
 Type: Package
 Title: A Fast Implementation of Random Forests
 Version: 0.18.0
 Date: 2026-01-15
 Authors@R: c(
-    person("Marvin N.", "Wright", email = "cran@wrig.de", role = c("aut", "cre")),
-    person("Stefan", "Wager", role = "ctb"),
-    person("Philipp", "Probst", role = "ctb"))
-Description: A fast implementation of Random Forests, particularly suited for high
+    person("Javier", "Pérez-Rodríguez", email = "javier.perez@uco.es", role = c("aut", "cre")),
+    person("Nicolás", "García-Pedrajas", role = "ctb")
+    )
+Description: A fast implementation of Crazy Forests, particularly suited for high
           dimensional data. Ensembles of classification, regression, survival and
           probability prediction trees are supported. Data from genome-wide association
           studies can be analyzed efficiently. In addition to data frames, datasets of
@@ -22,6 +22,5 @@ Suggests:
     testthat
 Encoding: UTF-8
 RoxygenNote: 7.3.3
-URL: https://imbs-hl.github.io/ranger/,
-    https://github.com/imbs-hl/ranger
-BugReports: https://github.com/imbs-hl/ranger/issues
+URL: https://github.com/perezxavi/crazyforest
+BugReports: https://github.com/perezxavi/crazyforest/issues

@@ -1,22 +1,23 @@
-bibentry(bibtype = "Article",
-  title        = "{ranger}: A Fast Implementation of Random Forests for High Dimensional Data in {C++} and {R}",
-  author       = c(person(given = c("Marvin", "N."),
-                          family = "Wright"),
-                   person(given = "Andreas",
-                          family = "Ziegler",
-                          email = "ziegler@imbs.uni-luebeck.de")),
-  journal      = "Journal of Statistical Software",
-  year         = "2017",
-  volume       = "77",
-  number       = "1",
-  pages        = "1--17",
-  doi          = "10.18637/jss.v077.i01",
+﻿bibentry(bibtype = "Article",
+  title        = "{crazyforest}: A Fast Implementation of Crazy Forests for High Dimensional Data in {C++} and {R}",
+  author       = c(person(given = "Javier",
+                          family = "Pérez-Rodríguez",
+                          email = "javier.perez@uco.es"),
+                   person(given = "Nicolás",
+                          family = "García-Pedrajas")),
+  journal      = "Journal",
+  year         = "2026",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  doi          = "",
 
-  header       = "To cite ranger in publications use:",
+  header       = "To cite crazyforest in publications use:",
   textVersion  =
-  paste("Marvin N. Wright, Andreas Ziegler (2017).",
-        "ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R.",
-        "Journal of Statistical Software, 77(1), 1-17.",
-        "doi:10.18637/jss.v077.i01")
+  paste("Javier Pérez-Rodríguez, Nicolás García-Pedrajas (2026).",
+        "crazyforest: A Fast Implementation of Crazy Forests for High Dimensional Data in C++ and R.",
+        "Journal, , .",
+        "doi:")
 )
+
 

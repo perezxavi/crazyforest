@@ -1,47 +1,47 @@
-# -------------------------------------------------------------------------------
-#   This file is part of Ranger.
+﻿# -------------------------------------------------------------------------------
+#   This file is part of CrazyForest.
 #
-# Ranger is free software: you can redistribute it and/or modify
+# CrazyForest is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Ranger is distributed in the hope that it will be useful,
+# CrazyForest is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ranger. If not, see <http://www.gnu.org/licenses/>.
+# along with CrazyForest. If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by:
 #
-#   Marvin N. Wright
-# Institut fuer Medizinische Biometrie und Statistik
-# Universitaet zu Luebeck
-# Ratzeburger Allee 160
-# 23562 Luebeck
+#   Javier Pérez-Rodríguez
+# Universidad de CÃ³rdoba
+# Spain
+
+
 # Germany
 #
-# http://www.imbs-luebeck.de
+# javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
 ##' @export
 timepoints <- function(x, ...)  UseMethod("timepoints")
 
-##' Extract unique death times of Ranger Survival prediction object.
+##' Extract unique death times of CrazyForest Survival prediction object.
 ##'
 ##'
-##' @title Ranger timepoints
-##' @param x Ranger Survival prediction object.
+##' @title CrazyForest timepoints
+##' @param x CrazyForest Survival prediction object.
 ##' @param ... Further arguments passed to or from other methods.
 ##' @return Unique death times
-##' @seealso \code{\link{ranger}}
-##' @author Marvin N. Wright
+##' @seealso \code{\link{crazyforest}}
+##' @author Javier Pérez-Rodríguez
 ##' @export
-timepoints.ranger.prediction <- function(x, ...) {
-  if (!inherits(x, "ranger.prediction")) {
-    stop("Object ist no ranger.prediction object.")
+timepoints.crazyforest.prediction <- function(x, ...) {
+  if (!inherits(x, "crazyforest.prediction")) {
+    stop("Object ist no crazyforest.prediction object.")
   }
   if (x$treetype != "Survival") {
     stop("No timepoints found. Object is no Survival prediction object.")
@@ -52,20 +52,20 @@ timepoints.ranger.prediction <- function(x, ...) {
   return(x$unique.death.times)
 }
 
-##' Extract unique death times of Ranger Survival forest
+##' Extract unique death times of CrazyForest Survival forest
 ##'
 ##'
-##' @title Ranger timepoints
-##' @param x Ranger Survival forest object.
+##' @title CrazyForest timepoints
+##' @param x CrazyForest Survival forest object.
 ##' @param ... Further arguments passed to or from other methods.
 ##' @return Unique death times
-##' @seealso \code{\link{ranger}}
-##' @author Marvin N. Wright
+##' @seealso \code{\link{crazyforest}}
+##' @author Javier Pérez-Rodríguez
 ##' @aliases timepoints
 ##' @export
-timepoints.ranger <- function(x, ...) {
-  if (!inherits(x, "ranger")) {
-    stop("Object ist no ranger object.")
+timepoints.crazyforest <- function(x, ...) {
+  if (!inherits(x, "crazyforest")) {
+    stop("Object ist no crazyforest object.")
   }
   if (x$treetype != "Survival") {
     stop("No timepoints found. Object is no Survival forest.")
@@ -75,3 +75,4 @@ timepoints.ranger <- function(x, ...) {
   }
   return(x$unique.death.times)
 }
+

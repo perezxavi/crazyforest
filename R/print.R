@@ -1,42 +1,42 @@
-# -------------------------------------------------------------------------------
-#   This file is part of Ranger.
+﻿# -------------------------------------------------------------------------------
+#   This file is part of CrazyForest.
 #
-# Ranger is free software: you can redistribute it and/or modify
+# CrazyForest is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Ranger is distributed in the hope that it will be useful,
+# CrazyForest is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ranger. If not, see <http://www.gnu.org/licenses/>.
+# along with CrazyForest. If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by:
 #
-#   Marvin N. Wright
-# Institut fuer Medizinische Biometrie und Statistik
-# Universitaet zu Luebeck
-# Ratzeburger Allee 160
-# 23562 Luebeck
+#   Javier Pérez-Rodríguez
+# Universidad de CÃ³rdoba
+# Spain
+
+
 # Germany
 #
-# http://www.imbs-luebeck.de
+# javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
-##' Print contents of Ranger object.
+##' Print contents of CrazyForest object.
 ##'
 ##'
-##' @title Print Ranger
-##' @param x Object of class 'ranger'.
+##' @title Print CrazyForest
+##' @param x Object of class 'crazyforest'.
 ##' @param ... Further arguments passed to or from other methods.
-##' @seealso \code{\link{ranger}}
-##' @author Marvin N. Wright
+##' @seealso \code{\link{crazyforest}}
+##' @author Javier Pérez-Rodríguez
 ##' @export
-print.ranger <- function(x, ...) {
-  cat("Ranger result\n\n")
+print.crazyforest <- function(x, ...) {
+  cat("CrazyForest result\n\n")
   cat("Call:\n", deparse(x$call), "\n\n")
   cat("Type:                            ", x$treetype, "\n")
   cat("Number of trees:                 ", x$num.trees, "\n")
@@ -68,16 +68,16 @@ print.ranger <- function(x, ...) {
   }
 }
 
-##' Print contents of Ranger forest object.
+##' Print contents of CrazyForest forest object.
 ##'
 ##'
-##' @title Print Ranger forest
-##' @param x Object of class 'ranger.forest'.
+##' @title Print CrazyForest forest
+##' @param x Object of class 'crazyforest.forest'.
 ##' @param ... further arguments passed to or from other methods.
-##' @author Marvin N. Wright
+##' @author Javier Pérez-Rodríguez
 ##' @export
-print.ranger.forest <- function(x, ...) {
-  cat("Ranger forest object\n\n")
+print.crazyforest.forest <- function(x, ...) {
+  cat("CrazyForest forest object\n\n")
   cat("Type:                         ", x$treetype, "\n")
   cat("Number of trees:              ", x$num.trees, "\n")
   if (x$treetype == "Survival") {
@@ -85,16 +85,16 @@ print.ranger.forest <- function(x, ...) {
   }
 }
 
-##' Print contents of Ranger prediction object.
+##' Print contents of CrazyForest prediction object.
 ##'
 ##'
-##' @title Print Ranger prediction
-##' @param x Object of class 'ranger.prediction'.
+##' @title Print CrazyForest prediction
+##' @param x Object of class 'crazyforest.prediction'.
 ##' @param ... further arguments passed to or from other methods.
-##' @author Marvin N. Wright
+##' @author Javier Pérez-Rodríguez
 ##' @export
-print.ranger.prediction <- function(x, ...) {
-  cat("Ranger prediction\n\n")
+print.crazyforest.prediction <- function(x, ...) {
+  cat("CrazyForest prediction\n\n")
   cat("Type:                            ", x$treetype, "\n")
   cat("Sample size:                     ", x$num.samples, "\n")
   cat("Number of independent variables: ", x$num.independent.variables, "\n")
@@ -104,13 +104,14 @@ print.ranger.prediction <- function(x, ...) {
 }
 
 ##' @export
-str.ranger.forest <- function(object, max.level = 2, ...) {
+str.crazyforest.forest <- function(object, max.level = 2, ...) {
   class(object) <- "list"
   str(object, max.level = max.level, ...)
 }
 
 ##' @export
-str.ranger <- function(object, max.level = 2, ...) {
+str.crazyforest <- function(object, max.level = 2, ...) {
   class(object) <- "list"
   str(object, max.level = max.level, ...)
 }
+

@@ -7,21 +7,21 @@
 hshrink(rf, lambda)
 }
 \arguments{
-\item{rf}{ranger object, created with \code{node.stats = TRUE}.}
+\item{rf}{crazyforest object, created with \code{node.stats = TRUE}.}
 
 \item{lambda}{Non-negative shrinkage parameter.}
 }
 \value{
-The ranger object is modified in-place.
+The crazyforest object is modified in-place.
 }
 \description{
-Apply hierarchical shrinkage to a ranger object. 
+Apply hierarchical shrinkage to a crazyforest object. 
 Hierarchical shrinkage is a regularization technique that recursively shrinks node predictions towards parent node predictions. 
 For details see Agarwal et al. (2022).
 }
 \examples{
 ## Hierarchical shrinkage for a probablity forest
-rf <- ranger(Species ~ ., iris, node.stats = TRUE, probability = TRUE)
+rf <- crazyforest(Species ~ ., iris, node.stats = TRUE, probability = TRUE)
 hshrink(rf, lambda = 5)
 }
 \references{
@@ -30,5 +30,5 @@ hshrink(rf, lambda = 5)
   }
 }
 \author{
-Marvin N. Wright
+Javier Pérez-Rodríguez
 }

@@ -1,69 +1,87 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 #ifndef FOREST_H_
 #define FOREST_H_
 
-#include <vector>
-#include <iostream>
-#include <random>
-#include <ctime>
-#include <memory>
-#include <thread>
 #include <chrono>
-#include <mutex>
 #include <condition_variable>
+#include <ctime>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <random>
+#include <thread>
+#include <vector>
 
-#include "globals.h"
-#include "Tree.h"
 #include "Data.h"
+#include "Tree.h"
+#include "globals.h"
 
-namespace ranger {
+namespace crazyforest {
 
 class Forest {
 public:
   Forest();
 
-  Forest(const Forest&) = delete;
-  Forest& operator=(const Forest&) = delete;
+  Forest(const Forest &) = delete;
+  Forest &operator=(const Forest &) = delete;
 
   virtual ~Forest() = default;
 
   // Init from c++ main or Rcpp from R
-  void initCpp(std::string dependent_variable_name, MemoryMode memory_mode, std::string input_file, uint mtry,
-      std::string output_prefix, uint num_trees, std::ostream* verbose_out, uint seed, uint num_threads,
-      std::string load_forest_filename, ImportanceMode importance_mode, uint min_node_size, uint min_bucket,
-      std::string split_select_weights_file, const std::vector<std::string>& always_split_variable_names,
-      std::string status_variable_name, bool sample_with_replacement,
-      const std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule,
-      std::string case_weights_file, bool predict_all, double sample_fraction, double alpha, double minprop,
-      double poisson_tau, bool holdout, PredictionType prediction_type, uint num_random_splits, uint max_depth,
-      const std::vector<double>& regularization_factor, bool regularization_usedepth);
-  void initR(std::unique_ptr<Data> input_data, uint mtry, uint num_trees, std::ostream* verbose_out, uint seed,
-      uint num_threads, ImportanceMode importance_mode, std::vector<uint>& min_node_size, std::vector<uint>& min_bucket,
-      std::vector<std::vector<double>>& split_select_weights,
-      const std::vector<std::string>& always_split_variable_names, bool prediction_mode, bool sample_with_replacement,
-      const std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule,
-      std::vector<double>& case_weights, std::vector<std::vector<size_t>>& manual_inbag, bool predict_all,
-      bool keep_inbag, std::vector<double>& sample_fraction, double alpha, double minprop, double poisson_tau, bool holdout,
-      PredictionType prediction_type, uint num_random_splits, bool order_snps, uint max_depth,
-      const std::vector<double>& regularization_factor, bool regularization_usedepth,
-      bool node_stats);
-  void init(std::unique_ptr<Data> input_data, uint mtry, std::string output_prefix,
-      uint num_trees, uint seed, uint num_threads, ImportanceMode importance_mode, std::vector<uint>& min_node_size, std::vector<uint>& min_bucket,
-      bool prediction_mode, bool sample_with_replacement, const std::vector<std::string>& unordered_variable_names,
-      bool memory_saving_splitting, SplitRule splitrule, bool predict_all, std::vector<double>& sample_fraction,
-      double alpha, double minprop, double poisson_tau, bool holdout, PredictionType prediction_type, uint num_random_splits,
-      bool order_snps, uint max_depth, const std::vector<double>& regularization_factor, bool regularization_usedepth,
-      bool node_stats);
+  void initCpp(std::string dependent_variable_name, MemoryMode memory_mode,
+               std::string input_file, uint mtry, std::string output_prefix,
+               uint num_trees, std::ostream *verbose_out, uint seed,
+               uint num_threads, std::string load_forest_filename,
+               ImportanceMode importance_mode, uint min_node_size,
+               uint min_bucket, std::string split_select_weights_file,
+               const std::vector<std::string> &always_split_variable_names,
+               std::string status_variable_name, bool sample_with_replacement,
+               const std::vector<std::string> &unordered_variable_names,
+               bool memory_saving_splitting, SplitRule splitrule,
+               std::string case_weights_file, bool predict_all,
+               double sample_fraction, double alpha, double minprop,
+               double poisson_tau, bool holdout, PredictionType prediction_type,
+               uint num_random_splits, uint max_depth,
+               const std::vector<double> &regularization_factor,
+               bool regularization_usedepth);
+  void initR(std::unique_ptr<Data> input_data, uint mtry, uint num_trees,
+             std::ostream *verbose_out, uint seed, uint num_threads,
+             ImportanceMode importance_mode, std::vector<uint> &min_node_size,
+             std::vector<uint> &min_bucket,
+             std::vector<std::vector<double>> &split_select_weights,
+             const std::vector<std::string> &always_split_variable_names,
+             bool prediction_mode, bool sample_with_replacement,
+             const std::vector<std::string> &unordered_variable_names,
+             bool memory_saving_splitting, SplitRule splitrule,
+             std::vector<double> &case_weights,
+             std::vector<std::vector<size_t>> &manual_inbag, bool predict_all,
+             bool keep_inbag, std::vector<double> &sample_fraction,
+             double alpha, double minprop, double poisson_tau, bool holdout,
+             PredictionType prediction_type, uint num_random_splits,
+             bool order_snps, uint max_depth,
+             const std::vector<double> &regularization_factor,
+             bool regularization_usedepth, bool node_stats);
+  void init(std::unique_ptr<Data> input_data, uint mtry,
+            std::string output_prefix, uint num_trees, uint seed,
+            uint num_threads, ImportanceMode importance_mode,
+            std::vector<uint> &min_node_size, std::vector<uint> &min_bucket,
+            bool prediction_mode, bool sample_with_replacement,
+            const std::vector<std::string> &unordered_variable_names,
+            bool memory_saving_splitting, SplitRule splitrule, bool predict_all,
+            std::vector<double> &sample_fraction, double alpha, double minprop,
+            double poisson_tau, bool holdout, PredictionType prediction_type,
+            uint num_random_splits, bool order_snps, uint max_depth,
+            const std::vector<double> &regularization_factor,
+            bool regularization_usedepth, bool node_stats);
   virtual void initInternal() = 0;
 
   // Grow or predict
@@ -78,77 +96,74 @@ public:
 
   // Save forest to file
   void saveToFile();
-  virtual void saveToFileInternal(std::ofstream& outfile) = 0;
+  virtual void saveToFileInternal(std::ofstream &outfile) = 0;
 
   std::vector<std::vector<std::vector<size_t>>> getChildNodeIDs() {
     std::vector<std::vector<std::vector<size_t>>> result;
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getChildNodeIDs());
     }
     return result;
   }
   std::vector<std::vector<size_t>> getSplitVarIDs() {
     std::vector<std::vector<size_t>> result;
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getSplitVarIDs());
     }
     return result;
   }
   std::vector<std::vector<double>> getSplitValues() {
     std::vector<std::vector<double>> result;
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getSplitValues());
     }
     return result;
   }
-  const std::vector<double>& getVariableImportance() const {
+  const std::vector<double> &getVariableImportance() const {
     return variable_importance;
   }
-  const std::vector<double>& getVariableImportanceCasewise() const {
+  const std::vector<double> &getVariableImportanceCasewise() const {
     return variable_importance_casewise;
   }
-  double getOverallPredictionError() const {
-    return overall_prediction_error;
-  }
-  const std::vector<std::vector<std::vector<double>>>& getPredictions() const {
+  double getOverallPredictionError() const { return overall_prediction_error; }
+  const std::vector<std::vector<std::vector<double>>> &getPredictions() const {
     return predictions;
   }
-  size_t getNumTrees() const {
-    return num_trees;
-  }
-  uint getMtry() const {
-    return mtry;
-  }
-  const std::vector<uint>& getMinNodeSize() const {
-    return min_node_size;
-  }
-  const std::vector<uint>& getMinBucket() const {
-    return min_bucket;
-  }
+  size_t getNumTrees() const { return num_trees; }
+  uint getMtry() const { return mtry; }
+  const std::vector<uint> &getMinNodeSize() const { return min_node_size; }
+  const std::vector<uint> &getMinBucket() const { return min_bucket; }
   size_t getNumIndependentVariables() const {
     return num_independent_variables;
   }
 
-  const std::vector<bool>& getIsOrderedVariable() const {
+  const std::vector<bool> &getIsOrderedVariable() const {
     return data->getIsOrderedVariable();
   }
 
   std::vector<std::vector<size_t>> getInbagCounts() const {
     std::vector<std::vector<size_t>> result;
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getInbagCounts());
     }
     return result;
   }
 
-  const std::vector<std::vector<size_t>>& getSnpOrder() const {
+  const std::vector<std::vector<size_t>> &getSnpOrder() const {
     return data->getSnpOrder();
   }
-  
+
+  void setPredictStrategy(PredictStrategy strategy) {
+    this->predict_strategy = strategy;
+  }
+  void setClassFrequencies(const std::vector<double> &freqs) {
+    this->class_frequencies = freqs;
+  }
+
   std::vector<std::vector<size_t>> getNumSamplesNodes() {
     std::vector<std::vector<size_t>> result;
     result.reserve(trees.size());
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getNumSamplesNodes());
     }
     return result;
@@ -156,7 +171,7 @@ public:
   std::vector<std::vector<double>> getNodePredictions() {
     std::vector<std::vector<double>> result;
     result.reserve(trees.size());
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getNodePredictions());
     }
     return result;
@@ -164,7 +179,7 @@ public:
   std::vector<std::vector<double>> getSplitStats() {
     std::vector<std::vector<double>> result;
     result.reserve(trees.size());
-    for (auto& tree : trees) {
+    for (auto &tree : trees) {
       result.push_back(tree->getSplitStats());
     }
     return result;
@@ -184,30 +199,37 @@ protected:
 
   void computePermutationImportance();
 
-  // Multithreading methods for growing/prediction/importance, called by each thread
-  void growTreesInThread(uint thread_idx, std::vector<double>* variable_importance);
-  void predictTreesInThread(uint thread_idx, const Data* prediction_data, bool oob_prediction);
+  // Multithreading methods for growing/prediction/importance, called by each
+  // thread
+  void growTreesInThread(uint thread_idx,
+                         std::vector<double> *variable_importance);
+  void predictTreesInThread(uint thread_idx, const Data *prediction_data,
+                            bool oob_prediction);
   void predictInternalInThread(uint thread_idx);
-  void computeTreePermutationImportanceInThread(uint thread_idx, std::vector<double>& importance,
-      std::vector<double>& variance, std::vector<double>& importance_casewise);
+  void computeTreePermutationImportanceInThread(
+      uint thread_idx, std::vector<double> &importance,
+      std::vector<double> &variance, std::vector<double> &importance_casewise);
 
   // Load forest from file
   void loadFromFile(std::string filename);
-  virtual void loadFromFileInternal(std::ifstream& infile) = 0;
+  virtual void loadFromFileInternal(std::ifstream &infile) = 0;
   void loadDependentVariableNamesFromFile(std::string filename);
 
   // Load data from file
-  std::unique_ptr<Data> loadDataFromFile(const std::string& data_path);
+  std::unique_ptr<Data> loadDataFromFile(const std::string &data_path);
 
-  // Set split select weights and variables to be always considered for splitting
-  void setSplitWeightVector(std::vector<std::vector<double>>& split_select_weights);
-  void setAlwaysSplitVariables(const std::vector<std::string>& always_split_variable_names);
+  // Set split select weights and variables to be always considered for
+  // splitting
+  void
+  setSplitWeightVector(std::vector<std::vector<double>> &split_select_weights);
+  void setAlwaysSplitVariables(
+      const std::vector<std::string> &always_split_variable_names);
 
   // Show progress every few seconds
   void showProgress(std::string operation, size_t max_progress);
 
   // Verbose output stream, cout if verbose==true, logfile if not
-  std::ostream* verbose_out;
+  std::ostream *verbose_out;
 
   std::vector<std::string> dependent_variable_names; // time,status for survival
   size_t num_trees;
@@ -227,6 +249,8 @@ protected:
   std::vector<double> sample_fraction;
   bool holdout;
   PredictionType prediction_type;
+  PredictStrategy predict_strategy;
+  std::vector<double> class_frequencies;
   uint num_random_splits;
   uint max_depth;
   bool save_node_stats;
@@ -234,7 +258,7 @@ protected:
   // MAXSTAT splitrule
   double alpha;
   double minprop;
-  
+
   // POISSON splitrule
   double poisson_tau;
 
@@ -250,8 +274,9 @@ protected:
   std::vector<std::vector<std::vector<double>>> predictions;
   double overall_prediction_error;
 
-  // Weight vector for selecting possible split variables, one weight between 0 (never select) and 1 (always select) for each variable
-  // Deterministic variables are always selected
+  // Weight vector for selecting possible split variables, one weight between 0
+  // (never select) and 1 (always select) for each variable Deterministic
+  // variables are always selected
   std::vector<size_t> deterministic_varIDs;
   std::vector<std::vector<double>> split_select_weights;
 
@@ -271,7 +296,7 @@ protected:
   std::vector<double> regularization_factor;
   bool regularization_usedepth;
   std::vector<bool> split_varIDs_used;
-  
+
   // Variable importance for all variables in forest
   std::vector<double> variable_importance;
 
@@ -286,6 +311,6 @@ protected:
 #endif
 };
 
-} // namespace ranger
+} // namespace crazyforest
 
 #endif /* FOREST_H_ */

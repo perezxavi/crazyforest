@@ -1,29 +1,31 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
 #include <algorithm>
 #include <stdexcept>
 #include <string>
 
-#include "utility.h"
+#include "Data.h"
 #include "ForestRegression.h"
 #include "TreeRegression.h"
-#include "Data.h"
+#include "utility.h"
 
-namespace ranger {
 
-void ForestRegression::loadForest(size_t num_trees,
-    std::vector<std::vector<std::vector<size_t>> >& forest_child_nodeIDs,
-    std::vector<std::vector<size_t>>& forest_split_varIDs, std::vector<std::vector<double>>& forest_split_values,
-    std::vector<bool>& is_ordered_variable) {
+namespace crazyforest {
+
+void ForestRegression::loadForest(
+    size_t num_trees,
+    std::vector<std::vector<std::vector<size_t>>> &forest_child_nodeIDs,
+    std::vector<std::vector<size_t>> &forest_split_varIDs,
+    std::vector<std::vector<double>> &forest_split_values,
+    std::vector<bool> &is_ordered_variable) {
 
   this->num_trees = num_trees;
   data->setIsOrderedVariable(is_ordered_variable);
@@ -31,8 +33,9 @@ void ForestRegression::loadForest(size_t num_trees,
   // Create trees
   trees.reserve(num_trees);
   for (size_t i = 0; i < num_trees; ++i) {
-    trees.push_back(
-        std::make_unique<TreeRegression>(forest_child_nodeIDs[i], forest_split_varIDs[i], forest_split_values[i]));
+    trees.push_back(std::make_unique<TreeRegression>(forest_child_nodeIDs[i],
+                                                     forest_split_varIDs[i],
+                                                     forest_split_values[i]));
   }
 
   // Create thread ranges
@@ -43,8 +46,8 @@ void ForestRegression::initInternal() {
 
   // If mtry not set, use floored square root of number of independent variables
   if (mtry == 0) {
-    unsigned long temp = sqrt((double) num_independent_variables);
-    mtry = std::max((unsigned long) 1, temp);
+    unsigned long temp = sqrt((double)num_independent_variables);
+    mtry = std::max((unsigned long)1, temp);
   }
 
   // Set minimal node size
@@ -62,11 +65,12 @@ void ForestRegression::initInternal() {
     for (size_t i = 0; i < num_samples; ++i) {
       double y = data->get_y(i, 0);
       if (y < 0 || y > 1) {
-        throw std::runtime_error("Beta splitrule applicable to regression data with outcome between 0 and 1 only.");
+        throw std::runtime_error("Beta splitrule applicable to regression data "
+                                 "with outcome between 0 and 1 only.");
       }
     }
   }
-  
+
   // Error if poisson splitrule used with negative data
   if (splitrule == POISSON && !prediction_mode) {
     double y_sum = 0;
@@ -74,11 +78,15 @@ void ForestRegression::initInternal() {
       double y = data->get_y(i, 0);
       y_sum += y;
       if (y < 0) {
-        throw std::runtime_error("Poisson splitrule applicable to regression data with non-positive outcome (y>=0 and sum(y)>0) only.");
+        throw std::runtime_error(
+            "Poisson splitrule applicable to regression data with non-positive "
+            "outcome (y>=0 and sum(y)>0) only.");
       }
     }
     if (y_sum <= 0) {
-      throw std::runtime_error("Poisson splitrule applicable to regression data with non-positive outcome (y>=0 and sum(y)>0) only.");
+      throw std::runtime_error(
+          "Poisson splitrule applicable to regression data with non-positive "
+          "outcome (y>=0 and sum(y)>0) only.");
     }
   }
 
@@ -98,11 +106,13 @@ void ForestRegression::growInternal() {
 void ForestRegression::allocatePredictMemory() {
   size_t num_prediction_samples = data->getNumRows();
   if (predict_all || prediction_type == TERMINALNODES) {
-    predictions = std::vector<std::vector<std::vector<double>>>(1,
-        std::vector<std::vector<double>>(num_prediction_samples, std::vector<double>(num_trees)));
+    predictions = std::vector<std::vector<std::vector<double>>>(
+        1, std::vector<std::vector<double>>(num_prediction_samples,
+                                            std::vector<double>(num_trees)));
   } else {
-    predictions = std::vector<std::vector<std::vector<double>>>(1,
-        std::vector<std::vector<double>>(1, std::vector<double>(num_prediction_samples)));
+    predictions = std::vector<std::vector<std::vector<double>>>(
+        1, std::vector<std::vector<double>>(
+               1, std::vector<double>(num_prediction_samples)));
   }
 }
 
@@ -111,9 +121,11 @@ void ForestRegression::predictInternal(size_t sample_idx) {
     // Get all tree predictions
     for (size_t tree_idx = 0; tree_idx < num_trees; ++tree_idx) {
       if (prediction_type == TERMINALNODES) {
-        predictions[0][sample_idx][tree_idx] = getTreePredictionTerminalNodeID(tree_idx, sample_idx);
+        predictions[0][sample_idx][tree_idx] =
+            getTreePredictionTerminalNodeID(tree_idx, sample_idx);
       } else {
-        predictions[0][sample_idx][tree_idx] = getTreePrediction(tree_idx, sample_idx);
+        predictions[0][sample_idx][tree_idx] =
+            getTreePrediction(tree_idx, sample_idx);
       }
     }
   } else {
@@ -130,11 +142,13 @@ void ForestRegression::computePredictionErrorInternal() {
 
   // For each sample sum over trees where sample is OOB
   std::vector<size_t> samples_oob_count;
-  predictions = std::vector<std::vector<std::vector<double>>>(1,
+  predictions = std::vector<std::vector<std::vector<double>>>(
+      1,
       std::vector<std::vector<double>>(1, std::vector<double>(num_samples, 0)));
   samples_oob_count.resize(num_samples, 0);
   for (size_t tree_idx = 0; tree_idx < num_trees; ++tree_idx) {
-    for (size_t sample_idx = 0; sample_idx < trees[tree_idx]->getNumSamplesOob(); ++sample_idx) {
+    for (size_t sample_idx = 0;
+         sample_idx < trees[tree_idx]->getNumSamplesOob(); ++sample_idx) {
       size_t sampleID = trees[tree_idx]->getOobSampleIDs()[sample_idx];
       double value = getTreePrediction(tree_idx, sample_idx);
 
@@ -149,22 +163,24 @@ void ForestRegression::computePredictionErrorInternal() {
   for (size_t i = 0; i < predictions[0][0].size(); ++i) {
     if (samples_oob_count[i] > 0) {
       ++num_predictions;
-      predictions[0][0][i] /= (double) samples_oob_count[i];
+      predictions[0][0][i] /= (double)samples_oob_count[i];
       double predicted_value = predictions[0][0][i];
       double real_value = data->get_y(i, 0);
-      overall_prediction_error += (predicted_value - real_value) * (predicted_value - real_value);
+      overall_prediction_error +=
+          (predicted_value - real_value) * (predicted_value - real_value);
     } else {
       predictions[0][0][i] = NAN;
     }
   }
 
-  overall_prediction_error /= (double) num_predictions;
+  overall_prediction_error /= (double)num_predictions;
 }
 
 // #nocov start
 void ForestRegression::writeOutputInternal() {
   if (verbose_out) {
-    *verbose_out << "Tree type:                         " << "Regression" << std::endl;
+    *verbose_out << "Tree type:                         " << "Regression"
+                 << std::endl;
   }
 }
 
@@ -175,15 +191,18 @@ void ForestRegression::writeConfusionFile() {
   std::ofstream outfile;
   outfile.open(filename, std::ios::out);
   if (!outfile.good()) {
-    throw std::runtime_error("Could not write to confusion file: " + filename + ".");
+    throw std::runtime_error("Could not write to confusion file: " + filename +
+                             ".");
   }
 
   // Write confusion to file
-  outfile << "Overall OOB prediction error (MSE): " << overall_prediction_error << std::endl;
+  outfile << "Overall OOB prediction error (MSE): " << overall_prediction_error
+          << std::endl;
 
   outfile.close();
   if (verbose_out)
-    *verbose_out << "Saved prediction error to file " << filename << "." << std::endl;
+    *verbose_out << "Saved prediction error to file " << filename << "."
+                 << std::endl;
 }
 
 void ForestRegression::writePredictionFile() {
@@ -193,7 +212,8 @@ void ForestRegression::writePredictionFile() {
   std::ofstream outfile;
   outfile.open(filename, std::ios::out);
   if (!outfile.good()) {
-    throw std::runtime_error("Could not write to prediction file: " + filename + ".");
+    throw std::runtime_error("Could not write to prediction file: " + filename +
+                             ".");
   }
 
   // Write
@@ -219,30 +239,33 @@ void ForestRegression::writePredictionFile() {
   }
 
   if (verbose_out)
-    *verbose_out << "Saved predictions to file " << filename << "." << std::endl;
+    *verbose_out << "Saved predictions to file " << filename << "."
+                 << std::endl;
 }
 
-void ForestRegression::saveToFileInternal(std::ofstream& outfile) {
+void ForestRegression::saveToFileInternal(std::ofstream &outfile) {
 
   // Write num_variables
-  outfile.write((char*) &num_independent_variables, sizeof(num_independent_variables));
+  outfile.write((char *)&num_independent_variables,
+                sizeof(num_independent_variables));
 
   // Write treetype
   TreeType treetype = TREE_REGRESSION;
-  outfile.write((char*) &treetype, sizeof(treetype));
+  outfile.write((char *)&treetype, sizeof(treetype));
 }
 
-void ForestRegression::loadFromFileInternal(std::ifstream& infile) {
+void ForestRegression::loadFromFileInternal(std::ifstream &infile) {
 
   // Read number of variables
   size_t num_variables_saved;
-  infile.read((char*) &num_variables_saved, sizeof(num_variables_saved));
+  infile.read((char *)&num_variables_saved, sizeof(num_variables_saved));
 
   // Read treetype
   TreeType treetype;
-  infile.read((char*) &treetype, sizeof(treetype));
+  infile.read((char *)&treetype, sizeof(treetype));
   if (treetype != TREE_REGRESSION) {
-    throw std::runtime_error("Wrong treetype. Loaded file is not a regression forest.");
+    throw std::runtime_error(
+        "Wrong treetype. Loaded file is not a regression forest.");
   }
 
   for (size_t i = 0; i < num_trees; ++i) {
@@ -257,24 +280,29 @@ void ForestRegression::loadFromFileInternal(std::ifstream& infile) {
 
     // If dependent variable not in test data, throw error
     if (num_variables_saved != num_independent_variables) {
-      throw std::runtime_error("Number of independent variables in data does not match with the loaded forest.");
+      throw std::runtime_error("Number of independent variables in data does "
+                               "not match with the loaded forest.");
     }
 
     // Create tree
-    trees.push_back(std::make_unique<TreeRegression>(child_nodeIDs, split_varIDs, split_values));
+    trees.push_back(std::make_unique<TreeRegression>(
+        child_nodeIDs, split_varIDs, split_values));
   }
 }
 
-double ForestRegression::getTreePrediction(size_t tree_idx, size_t sample_idx) const {
-  const auto& tree = dynamic_cast<const TreeRegression&>(*trees[tree_idx]);
+double ForestRegression::getTreePrediction(size_t tree_idx,
+                                           size_t sample_idx) const {
+  const auto &tree = dynamic_cast<const TreeRegression &>(*trees[tree_idx]);
   return tree.getPrediction(sample_idx);
 }
 
-size_t ForestRegression::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {
-  const auto& tree = dynamic_cast<const TreeRegression&>(*trees[tree_idx]);
+size_t
+ForestRegression::getTreePredictionTerminalNodeID(size_t tree_idx,
+                                                  size_t sample_idx) const {
+  const auto &tree = dynamic_cast<const TreeRegression &>(*trees[tree_idx]);
   return tree.getPredictionTerminalNodeID(sample_idx);
 }
 
 // #nocov end
 
-}// namespace ranger
+} // namespace crazyforest

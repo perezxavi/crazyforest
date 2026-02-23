@@ -1,32 +1,33 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
+#include <algorithm>
 #include <fstream>
+#include <iterator>
 #include <sstream>
 #include <stdexcept>
-#include <algorithm>
-#include <iterator>
+
 
 #include "Data.h"
 #include "utility.h"
 
-namespace ranger {
+namespace crazyforest {
 
-Data::Data() :
-    num_rows(0), num_rows_rounded(0), num_cols(0), snp_data(0), num_cols_no_snp(0), externalData(true), index_data(0), max_num_unique_values(
-        0), order_snps(false), any_na(false) {
-}
+Data::Data()
+    : num_rows(0), num_rows_rounded(0), num_cols(0), snp_data(0),
+      num_cols_no_snp(0), externalData(true), index_data(0),
+      max_num_unique_values(0), order_snps(false), any_na(false) {}
 
-size_t Data::getVariableID(const std::string& variable_name) const {
-  auto it = std::find(variable_names.cbegin(), variable_names.cend(), variable_name);
+size_t Data::getVariableID(const std::string &variable_name) const {
+  auto it =
+      std::find(variable_names.cbegin(), variable_names.cend(), variable_name);
   if (it == variable_names.cend()) {
     throw std::runtime_error("Variable " + variable_name + " not found.");
   }
@@ -34,7 +35,7 @@ size_t Data::getVariableID(const std::string& variable_name) const {
 }
 
 // #nocov start (cannot be tested anymore because GenABEL not on CRAN)
-void Data::addSnpData(unsigned char* snp_data, size_t num_cols_snp) {
+void Data::addSnpData(unsigned char *snp_data, size_t num_cols_snp) {
   num_cols = num_cols_no_snp + num_cols_snp;
   num_rows_rounded = roundToNextMultiple(num_rows, 4);
   this->snp_data = snp_data;
@@ -42,7 +43,8 @@ void Data::addSnpData(unsigned char* snp_data, size_t num_cols_snp) {
 // #nocov end
 
 // #nocov start
-bool Data::loadFromFile(std::string filename, std::vector<std::string>& dependent_variable_names) {
+bool Data::loadFromFile(std::string filename,
+                        std::vector<std::string> &dependent_variable_names) {
 
   bool result;
 
@@ -67,13 +69,17 @@ bool Data::loadFromFile(std::string filename, std::vector<std::string>& dependen
   std::string header_line;
   getline(input_file, header_line);
 
-  // Find out if comma, semicolon or whitespace separated and call appropriate method
+  // Find out if comma, semicolon or whitespace separated and call appropriate
+  // method
   if (header_line.find(',') != std::string::npos) {
-    result = loadFromFileOther(input_file, header_line, dependent_variable_names, ',');
+    result = loadFromFileOther(input_file, header_line,
+                               dependent_variable_names, ',');
   } else if (header_line.find(';') != std::string::npos) {
-    result = loadFromFileOther(input_file, header_line, dependent_variable_names, ';');
+    result = loadFromFileOther(input_file, header_line,
+                               dependent_variable_names, ';');
   } else {
-    result = loadFromFileWhitespace(input_file, header_line, dependent_variable_names);
+    result = loadFromFileWhitespace(input_file, header_line,
+                                    dependent_variable_names);
   }
 
   externalData = false;
@@ -81,8 +87,9 @@ bool Data::loadFromFile(std::string filename, std::vector<std::string>& dependen
   return result;
 }
 
-bool Data::loadFromFileWhitespace(std::ifstream& input_file, std::string header_line,
-    std::vector<std::string>& dependent_variable_names) {
+bool Data::loadFromFileWhitespace(
+    std::ifstream &input_file, std::string header_line,
+    std::vector<std::string> &dependent_variable_names) {
 
   size_t num_dependent_variables = dependent_variable_names.size();
   std::vector<size_t> dependent_varIDs;
@@ -137,11 +144,12 @@ bool Data::loadFromFileWhitespace(std::ifstream& input_file, std::string header_
     }
     if (column > (num_cols + num_dependent_variables)) {
       throw std::runtime_error(
-          std::string("Could not open input file. Too many columns in row ") + std::to_string(row) + std::string("."));
+          std::string("Could not open input file. Too many columns in row ") +
+          std::to_string(row) + std::string("."));
     } else if (column < (num_cols + num_dependent_variables)) {
       throw std::runtime_error(
-          std::string("Could not open input file. Too few columns in row ") + std::to_string(row)
-              + std::string(". Are all values numeric?"));
+          std::string("Could not open input file. Too few columns in row ") +
+          std::to_string(row) + std::string(". Are all values numeric?"));
     }
     ++row;
   }
@@ -149,8 +157,9 @@ bool Data::loadFromFileWhitespace(std::ifstream& input_file, std::string header_
   return error;
 }
 
-bool Data::loadFromFileOther(std::ifstream& input_file, std::string header_line,
-    std::vector<std::string>& dependent_variable_names, char separator) {
+bool Data::loadFromFileOther(std::ifstream &input_file, std::string header_line,
+                             std::vector<std::string> &dependent_variable_names,
+                             char separator) {
 
   size_t num_dependent_variables = dependent_variable_names.size();
   std::vector<size_t> dependent_varIDs;
@@ -214,12 +223,13 @@ bool Data::loadFromFileOther(std::ifstream& input_file, std::string header_line,
 }
 // #nocov end
 
-void Data::getAllValues(std::vector<double>& all_values, std::vector<size_t>& sampleIDs, size_t varID, size_t start,
-    size_t end) const {
+void Data::getAllValues(std::vector<double> &all_values,
+                        std::vector<size_t> &sampleIDs, size_t varID,
+                        size_t start, size_t end) const {
 
   // All values for varID (no duplicates) for given sampleIDs
   if (getUnpermutedVarID(varID) < num_cols_no_snp) {
-    
+
     all_values.reserve(end - start);
     for (size_t pos = start; pos < end; ++pos) {
       all_values.push_back(get_x(sampleIDs[pos], varID));
@@ -229,22 +239,25 @@ void Data::getAllValues(std::vector<double>& all_values, std::vector<size_t>& sa
     } else {
       std::sort(all_values.begin(), all_values.end());
     }
-    all_values.erase(std::unique(all_values.begin(), all_values.end()), all_values.end());
-    
+    all_values.erase(std::unique(all_values.begin(), all_values.end()),
+                     all_values.end());
+
     // Keep only one NaN value
     if (any_na) {
-      while (all_values.size() >= 2 && std::isnan(all_values[all_values.size() - 2])) {
+      while (all_values.size() >= 2 &&
+             std::isnan(all_values[all_values.size() - 2])) {
         all_values.pop_back();
       }
     }
   } else {
     // If GWA data just use 0, 1, 2
-    all_values = std::vector<double>( { 0, 1, 2 });
+    all_values = std::vector<double>({0, 1, 2});
   }
 }
 
-void Data::getMinMaxValues(double& min, double&max, std::vector<size_t>& sampleIDs, size_t varID, size_t start,
-    size_t end) const {
+void Data::getMinMaxValues(double &min, double &max,
+                           std::vector<size_t> &sampleIDs, size_t varID,
+                           size_t start, size_t end) const {
   if (sampleIDs.size() > 0) {
     min = get_x(sampleIDs[start], varID);
     max = min;
@@ -273,28 +286,34 @@ void Data::sort() {
     for (size_t row = 0; row < num_rows; ++row) {
       unique_values[row] = get_x(row, col);
     }
-    
+
     if (any_na) {
       std::sort(unique_values.begin(), unique_values.end(), less_nan<double>);
     } else {
       std::sort(unique_values.begin(), unique_values.end());
     }
-    unique_values.erase(unique(unique_values.begin(), unique_values.end()), unique_values.end());
+    unique_values.erase(unique(unique_values.begin(), unique_values.end()),
+                        unique_values.end());
 
     // Get index of unique value
     for (size_t row = 0; row < num_rows; ++row) {
       size_t idx;
       if (any_na) {
-        idx = std::lower_bound(unique_values.begin(), unique_values.end(), get_x(row, col), less_nan<double>) - unique_values.begin();
+        idx = std::lower_bound(unique_values.begin(), unique_values.end(),
+                               get_x(row, col), less_nan<double>) -
+              unique_values.begin();
       } else {
-        idx = std::lower_bound(unique_values.begin(), unique_values.end(), get_x(row, col)) - unique_values.begin();
+        idx = std::lower_bound(unique_values.begin(), unique_values.end(),
+                               get_x(row, col)) -
+              unique_values.begin();
       }
       index_data[col * num_rows + row] = idx;
     }
-    
+
     // Save unique values (keep NaN)
     if (any_na) {
-      while (unique_values.size() >= 2 && std::isnan(unique_values[unique_values.size() - 2])) {
+      while (unique_values.size() >= 2 &&
+             std::isnan(unique_values[unique_values.size() - 2])) {
         unique_values.pop_back();
       }
     }
@@ -340,7 +359,8 @@ void Data::orderSnpLevels(bool corrected_importance) {
         row_permuted = getPermutedSampleID(row);
       }
       size_t idx = col * num_rows_rounded + row_permuted;
-      size_t value = (((snp_data[idx / 4] & mask[idx % 4]) >> offset[idx % 4]) - 1);
+      size_t value =
+          (((snp_data[idx / 4] & mask[idx % 4]) >> offset[idx % 4]) - 1);
 
       // TODO: Better way to treat missing values?
       if (value > 2) {
@@ -363,5 +383,4 @@ void Data::orderSnpLevels(bool corrected_importance) {
 }
 // #nocov end
 
-} // namespace ranger
-
+} // namespace crazyforest

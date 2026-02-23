@@ -1,33 +1,34 @@
 /*-------------------------------------------------------------------------------
- This file is part of ranger.
+ This file is part of crazyforest.
 
- Copyright (c) [2014-2018] [Marvin N. Wright]
+ This software may be modified and distributed under the terms of the MIT
+ license.
 
- This software may be modified and distributed under the terms of the MIT license.
-
- Please note that the C++ core of ranger is distributed under MIT license and the
- R package "ranger" under GPL3 license.
+ Please note that the C++ core of crazyforest is distributed under MIT license and
+ the R package "crazyforest" under GPL3 license.
  #-------------------------------------------------------------------------------*/
 
-#include <unordered_map>
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <random>
 #include <stdexcept>
-#include <cmath>
 #include <string>
+#include <unordered_map>
 
-#include "utility.h"
+#include "Data.h"
 #include "ForestClassification.h"
 #include "TreeClassification.h"
-#include "Data.h"
+#include "utility.h"
 
-namespace ranger {
+namespace crazyforest {
 
-void ForestClassification::loadForest(size_t num_trees,
-    std::vector<std::vector<std::vector<size_t>> >& forest_child_nodeIDs,
-    std::vector<std::vector<size_t>>& forest_split_varIDs, std::vector<std::vector<double>>& forest_split_values,
-    std::vector<double>& class_values, std::vector<bool>& is_ordered_variable) {
+void ForestClassification::loadForest(
+    size_t num_trees,
+    std::vector<std::vector<std::vector<size_t>>> &forest_child_nodeIDs,
+    std::vector<std::vector<size_t>> &forest_split_varIDs,
+    std::vector<std::vector<double>> &forest_split_values,
+    std::vector<double> &class_values, std::vector<bool> &is_ordered_variable) {
 
   this->num_trees = num_trees;
   this->class_values = class_values;
@@ -36,9 +37,9 @@ void ForestClassification::loadForest(size_t num_trees,
   // Create trees
   trees.reserve(num_trees);
   for (size_t i = 0; i < num_trees; ++i) {
-    trees.push_back(
-        std::make_unique<TreeClassification>(forest_child_nodeIDs[i], forest_split_varIDs[i], forest_split_values[i],
-            &this->class_values, &response_classIDs));
+    trees.push_back(std::make_unique<TreeClassification>(
+        forest_child_nodeIDs[i], forest_split_varIDs[i], forest_split_values[i],
+        &this->class_values, &response_classIDs));
   }
 
   // Create thread ranges
@@ -47,10 +48,11 @@ void ForestClassification::loadForest(size_t num_trees,
 
 void ForestClassification::initInternal() {
 
-  // If mtry not set, use floored square root of number of independent variables.
+  // If mtry not set, use floored square root of number of independent
+  // variables.
   if (mtry == 0) {
-    unsigned long temp = sqrt((double) num_independent_variables);
-    mtry = std::max((unsigned long) 1, temp);
+    unsigned long temp = sqrt((double)num_independent_variables);
+    mtry = std::max((unsigned long)1, temp);
   }
 
   // Set minimal node size
@@ -69,7 +71,8 @@ void ForestClassification::initInternal() {
       double value = data->get_y(i, 0);
 
       // If classID is already in class_values, use ID. Else create a new one.
-      uint classID = find(class_values.begin(), class_values.end(), value) - class_values.begin();
+      uint classID = find(class_values.begin(), class_values.end(), value) -
+                     class_values.begin();
       if (classID == class_values.size()) {
         class_values.push_back(value);
       }
@@ -77,14 +80,15 @@ void ForestClassification::initInternal() {
     }
 
     if (splitrule == HELLINGER && class_values.size() != 2) {
-      throw std::runtime_error("Hellinger splitrule only implemented for binary classification.");
+      throw std::runtime_error(
+          "Hellinger splitrule only implemented for binary classification.");
     }
   }
 
   // Create sampleIDs_per_class if required
   if (sample_fraction.size() > 1) {
     sampleIDs_per_class.resize(sample_fraction.size());
-    for (auto& v : sampleIDs_per_class) {
+    for (auto &v : sampleIDs_per_class) {
       v.reserve(num_samples);
     }
     for (size_t i = 0; i < num_samples; ++i) {
@@ -105,19 +109,22 @@ void ForestClassification::initInternal() {
 void ForestClassification::growInternal() {
   trees.reserve(num_trees);
   for (size_t i = 0; i < num_trees; ++i) {
-    trees.push_back(
-        std::make_unique<TreeClassification>(&class_values, &response_classIDs, &sampleIDs_per_class, &class_weights));
+    trees.push_back(std::make_unique<TreeClassification>(
+        &class_values, &response_classIDs, &sampleIDs_per_class,
+        &class_weights));
   }
 }
 
 void ForestClassification::allocatePredictMemory() {
   size_t num_prediction_samples = data->getNumRows();
   if (predict_all || prediction_type == TERMINALNODES) {
-    predictions = std::vector<std::vector<std::vector<double>>>(1,
-        std::vector<std::vector<double>>(num_prediction_samples, std::vector<double>(num_trees)));
+    predictions = std::vector<std::vector<std::vector<double>>>(
+        1, std::vector<std::vector<double>>(num_prediction_samples,
+                                            std::vector<double>(num_trees)));
   } else {
-    predictions = std::vector<std::vector<std::vector<double>>>(1,
-        std::vector<std::vector<double>>(1, std::vector<double>(num_prediction_samples)));
+    predictions = std::vector<std::vector<std::vector<double>>>(
+        1, std::vector<std::vector<double>>(
+               1, std::vector<double>(num_prediction_samples)));
   }
 }
 
@@ -126,18 +133,75 @@ void ForestClassification::predictInternal(size_t sample_idx) {
     // Get all tree predictions
     for (size_t tree_idx = 0; tree_idx < num_trees; ++tree_idx) {
       if (prediction_type == TERMINALNODES) {
-        predictions[0][sample_idx][tree_idx] = getTreePredictionTerminalNodeID(tree_idx, sample_idx);
+        predictions[0][sample_idx][tree_idx] =
+            getTreePredictionTerminalNodeID(tree_idx, sample_idx);
       } else {
-        predictions[0][sample_idx][tree_idx] = getTreePrediction(tree_idx, sample_idx);
+        predictions[0][sample_idx][tree_idx] =
+            getTreePrediction(tree_idx, sample_idx);
       }
     }
   } else {
-    // Count classes over trees and save class with maximum count
+    // Count classes over trees
     std::unordered_map<double, size_t> class_count;
     for (size_t tree_idx = 0; tree_idx < num_trees; ++tree_idx) {
       ++class_count[getTreePrediction(tree_idx, sample_idx)];
     }
-    predictions[0][0][sample_idx] = mostFrequentValue(class_count, random_number_generator);
+
+    if (predict_strategy == PREDICT_ROULETTE) {
+      size_t total_votes = num_trees;
+      std::uniform_real_distribution<double> udist(0.0, total_votes);
+      double u = udist(random_number_generator);
+      double cumulative_sum = 0.0;
+      for (const auto &kv : class_count) {
+        cumulative_sum += kv.second;
+        if (cumulative_sum >= u) {
+          predictions[0][0][sample_idx] = kv.first;
+          break;
+        }
+      }
+    } else if (predict_strategy == PREDICT_CORRECTED_ROULETTE) {
+      double total_adjusted_weight = 0.0;
+      std::unordered_map<double, double> adjusted_weights;
+      for (const auto &kv : class_count) {
+        double current_class_value = kv.first;
+        double orig_freq = 1.0;
+
+        // Find the original frequency for this class
+        for (size_t k = 0; k < class_values.size(); ++k) {
+          if (std::abs(class_values[k] - current_class_value) < 1e-9) {
+            if (k < class_frequencies.size() && class_frequencies[k] > 0) {
+              orig_freq = class_frequencies[k];
+            }
+            break;
+          }
+        }
+
+        double weight = (double)kv.second / (orig_freq + 1e-15);
+        adjusted_weights[current_class_value] = weight;
+        total_adjusted_weight += weight;
+      }
+
+      if (total_adjusted_weight > 0) {
+        std::uniform_real_distribution<double> udist(0.0,
+                                                     total_adjusted_weight);
+        double u = udist(random_number_generator);
+        double cumulative_sum = 0.0;
+        double last_class = class_count.begin()->first;
+        for (const auto &kv : adjusted_weights) {
+          cumulative_sum += kv.second;
+          last_class = kv.first;
+          if (cumulative_sum >= u) {
+            break;
+          }
+        }
+        predictions[0][0][sample_idx] = last_class;
+      } else {
+        predictions[0][0][sample_idx] = class_count.begin()->first;
+      }
+    } else {
+      predictions[0][0][sample_idx] =
+          mostFrequentValue(class_count, random_number_generator);
+    }
   }
 }
 
@@ -152,18 +216,76 @@ void ForestClassification::computePredictionErrorInternal() {
 
   // For each tree loop over OOB samples and count classes
   for (size_t tree_idx = 0; tree_idx < num_trees; ++tree_idx) {
-    for (size_t sample_idx = 0; sample_idx < trees[tree_idx]->getNumSamplesOob(); ++sample_idx) {
+    for (size_t sample_idx = 0;
+         sample_idx < trees[tree_idx]->getNumSamplesOob(); ++sample_idx) {
       size_t sampleID = trees[tree_idx]->getOobSampleIDs()[sample_idx];
       ++class_counts[sampleID][getTreePrediction(tree_idx, sample_idx)];
     }
   }
 
-  // Compute majority vote for each sample
-  predictions = std::vector<std::vector<std::vector<double>>>(1,
-      std::vector<std::vector<double>>(1, std::vector<double>(num_samples)));
+  // Compute aggregated prediction for each sample
+  predictions = std::vector<std::vector<std::vector<double>>>(
+      1, std::vector<std::vector<double>>(1, std::vector<double>(num_samples)));
   for (size_t i = 0; i < num_samples; ++i) {
     if (!class_counts[i].empty()) {
-      predictions[0][0][i] = mostFrequentValue(class_counts[i], random_number_generator);
+      if (predict_strategy == PREDICT_ROULETTE) {
+        size_t total_votes = 0;
+        for (const auto &kv : class_counts[i]) {
+          total_votes += kv.second;
+        }
+        std::uniform_real_distribution<double> udist(0.0, total_votes);
+        double u = udist(random_number_generator);
+        double cumulative_sum = 0.0;
+        for (const auto &kv : class_counts[i]) {
+          cumulative_sum += kv.second;
+          if (cumulative_sum >= u) {
+            predictions[0][0][i] = kv.first;
+            break;
+          }
+        }
+      } else if (predict_strategy == PREDICT_CORRECTED_ROULETTE) {
+        double total_adjusted_weight = 0.0;
+        std::unordered_map<double, double> adjusted_weights;
+        for (const auto &kv : class_counts[i]) {
+          double current_class_value = kv.first;
+          double orig_freq = 1.0;
+
+          // Find the original frequency for this class
+          for (size_t k = 0; k < class_values.size(); ++k) {
+            if (std::abs(class_values[k] - current_class_value) < 1e-9) {
+              if (k < class_frequencies.size() && class_frequencies[k] > 0) {
+                orig_freq = class_frequencies[k];
+              }
+              break;
+            }
+          }
+
+          double weight = (double)kv.second / (orig_freq + 1e-15);
+          adjusted_weights[current_class_value] = weight;
+          total_adjusted_weight += weight;
+        }
+
+        if (total_adjusted_weight > 0) {
+          std::uniform_real_distribution<double> udist(0.0,
+                                                       total_adjusted_weight);
+          double u = udist(random_number_generator);
+          double cumulative_sum = 0.0;
+          double last_class = class_counts[i].begin()->first;
+          for (const auto &kv : adjusted_weights) {
+            cumulative_sum += kv.second;
+            last_class = kv.first;
+            if (cumulative_sum >= u) {
+              break;
+            }
+          }
+          predictions[0][0][i] = last_class;
+        } else {
+          predictions[0][0][i] = class_counts[i].begin()->first;
+        }
+      } else {
+        predictions[0][0][i] =
+            mostFrequentValue(class_counts[i], random_number_generator);
+      }
     } else {
       predictions[0][0][i] = NAN;
     }
@@ -183,13 +305,15 @@ void ForestClassification::computePredictionErrorInternal() {
       ++classification_table[std::make_pair(real_value, predicted_value)];
     }
   }
-  overall_prediction_error = (double) num_missclassifications / (double) num_predictions;
+  overall_prediction_error =
+      (double)num_missclassifications / (double)num_predictions;
 }
 
 // #nocov start
 void ForestClassification::writeOutputInternal() {
   if (verbose_out) {
-    *verbose_out << "Tree type:                         " << "Classification" << std::endl;
+    *verbose_out << "Tree type:                         " << "Classification"
+                 << std::endl;
   }
 }
 
@@ -200,22 +324,25 @@ void ForestClassification::writeConfusionFile() {
   std::ofstream outfile;
   outfile.open(filename, std::ios::out);
   if (!outfile.good()) {
-    throw std::runtime_error("Could not write to confusion file: " + filename + ".");
+    throw std::runtime_error("Could not write to confusion file: " + filename +
+                             ".");
   }
 
   // Write confusion to file
-  outfile << "Overall OOB prediction error (Fraction missclassified): " << overall_prediction_error << std::endl;
+  outfile << "Overall OOB prediction error (Fraction missclassified): "
+          << overall_prediction_error << std::endl;
   outfile << std::endl;
   outfile << "Class specific prediction errors:" << std::endl;
   outfile << "           ";
-  for (auto& class_value : class_values) {
+  for (auto &class_value : class_values) {
     outfile << "     " << class_value;
   }
   outfile << std::endl;
-  for (auto& predicted_value : class_values) {
+  for (auto &predicted_value : class_values) {
     outfile << "predicted " << predicted_value << "     ";
-    for (auto& real_value : class_values) {
-      size_t value = classification_table[std::make_pair(real_value, predicted_value)];
+    for (auto &real_value : class_values) {
+      size_t value =
+          classification_table[std::make_pair(real_value, predicted_value)];
       outfile << value;
       if (value < 10) {
         outfile << "     ";
@@ -234,7 +361,8 @@ void ForestClassification::writeConfusionFile() {
 
   outfile.close();
   if (verbose_out)
-    *verbose_out << "Saved confusion matrix to file " << filename << "." << std::endl;
+    *verbose_out << "Saved confusion matrix to file " << filename << "."
+                 << std::endl;
 }
 
 void ForestClassification::writePredictionFile() {
@@ -244,7 +372,8 @@ void ForestClassification::writePredictionFile() {
   std::ofstream outfile;
   outfile.open(filename, std::ios::out);
   if (!outfile.good()) {
-    throw std::runtime_error("Could not write to prediction file: " + filename + ".");
+    throw std::runtime_error("Could not write to prediction file: " + filename +
+                             ".");
   }
 
   // Write
@@ -270,33 +399,36 @@ void ForestClassification::writePredictionFile() {
   }
 
   if (verbose_out)
-    *verbose_out << "Saved predictions to file " << filename << "." << std::endl;
+    *verbose_out << "Saved predictions to file " << filename << "."
+                 << std::endl;
 }
 
-void ForestClassification::saveToFileInternal(std::ofstream& outfile) {
+void ForestClassification::saveToFileInternal(std::ofstream &outfile) {
 
   // Write num_variables
-  outfile.write((char*) &num_independent_variables, sizeof(num_independent_variables));
+  outfile.write((char *)&num_independent_variables,
+                sizeof(num_independent_variables));
 
   // Write treetype
   TreeType treetype = TREE_CLASSIFICATION;
-  outfile.write((char*) &treetype, sizeof(treetype));
+  outfile.write((char *)&treetype, sizeof(treetype));
 
   // Write class_values
   saveVector1D(class_values, outfile);
 }
 
-void ForestClassification::loadFromFileInternal(std::ifstream& infile) {
+void ForestClassification::loadFromFileInternal(std::ifstream &infile) {
 
   // Read number of variables
   size_t num_variables_saved;
-  infile.read((char*) &num_variables_saved, sizeof(num_variables_saved));
+  infile.read((char *)&num_variables_saved, sizeof(num_variables_saved));
 
   // Read treetype
   TreeType treetype;
-  infile.read((char*) &treetype, sizeof(treetype));
+  infile.read((char *)&treetype, sizeof(treetype));
   if (treetype != TREE_CLASSIFICATION) {
-    throw std::runtime_error("Wrong treetype. Loaded file is not a classification forest.");
+    throw std::runtime_error(
+        "Wrong treetype. Loaded file is not a classification forest.");
   }
 
   // Read class_values
@@ -314,25 +446,30 @@ void ForestClassification::loadFromFileInternal(std::ifstream& infile) {
 
     // If dependent variable not in test data, throw error
     if (num_variables_saved != num_independent_variables) {
-      throw std::runtime_error("Number of independent variables in data does not match with the loaded forest.");
+      throw std::runtime_error("Number of independent variables in data does "
+                               "not match with the loaded forest.");
     }
 
     // Create tree
-    trees.push_back(
-        std::make_unique<TreeClassification>(child_nodeIDs, split_varIDs, split_values, &class_values, &response_classIDs));
+    trees.push_back(std::make_unique<TreeClassification>(
+        child_nodeIDs, split_varIDs, split_values, &class_values,
+        &response_classIDs));
   }
 }
 
-double ForestClassification::getTreePrediction(size_t tree_idx, size_t sample_idx) const {
-  const auto& tree = dynamic_cast<const TreeClassification&>(*trees[tree_idx]);
+double ForestClassification::getTreePrediction(size_t tree_idx,
+                                               size_t sample_idx) const {
+  const auto &tree = dynamic_cast<const TreeClassification &>(*trees[tree_idx]);
   return tree.getPrediction(sample_idx);
 }
 
-size_t ForestClassification::getTreePredictionTerminalNodeID(size_t tree_idx, size_t sample_idx) const {
-  const auto& tree = dynamic_cast<const TreeClassification&>(*trees[tree_idx]);
+size_t
+ForestClassification::getTreePredictionTerminalNodeID(size_t tree_idx,
+                                                      size_t sample_idx) const {
+  const auto &tree = dynamic_cast<const TreeClassification &>(*trees[tree_idx]);
   return tree.getPredictionTerminalNodeID(sample_idx);
 }
 
 // #nocov end
 
-}// namespace ranger
+} // namespace crazyforest
