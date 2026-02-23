@@ -1,6 +1,8 @@
 ﻿# crazyforest 🌳🎲
 
-[![R-CMD-check](https://github.com/perezxavi/crazyforest/workflows/R-CMD-check/badge.svg)](https://github.com/perezxavi/crazyforest/actions)
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/perezxavi/crazyforest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/perezxavi/crazyforest/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
 ![Version](https://img.shields.shields.io/badge/Version-0.1.0-orange.svg)
 ![License: GPL v3](https://img.shields.shields.io/badge/License-GPLv3-blue.svg)
 
