@@ -1,7 +1,7 @@
-﻿[![R-CMD-check](https://github.com/imbs-hl/crazyforest/workflows/R-CMD-check/badge.svg)](https://github.com/imbs-hl/crazyforest/actions)
+﻿[![R-CMD-check](https://github.com/perezxavi/crazyforest/workflows/R-CMD-check/badge.svg)](https://github.com/perezxavi/crazyforest/actions)
 ![CRAN Downloads month](https://cranlogs.r-pkg.org/badges/crazyforest?color=brightgreen)
 ![CRAN Downloads overall](https://cranlogs.r-pkg.org/badges/grand-total/crazyforest?color=brightgreen)
-## crazyforest: A Fast Implementation of Random Forests
+## crazyforest: A Fast Implementation of CrazyForests
 Javier Pérez-Rodríguez
 
 ### Introduction
