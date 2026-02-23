@@ -1,81 +1,69 @@
-﻿[![R-CMD-check](https://github.com/imbs-hl/crazyforest/workflows/R-CMD-check/badge.svg)](https://github.com/imbs-hl/crazyforest/actions)
-![CRAN Downloads month](https://cranlogs.r-pkg.org/badges/crazyforest?color=brightgreen)
-![CRAN Downloads overall](https://cranlogs.r-pkg.org/badges/grand-total/crazyforest?color=brightgreen)
-## crazyforest: A Fast Implementation of Random Forests
-Javier Pérez-Rodríguez
+﻿# crazyforest 🌳🎲
 
-### Introduction
-crazyforest is a fast implementation of random forests (Breiman 2001) or recursive partitioning, particularly suited for high dimensional data. Classification, regression, and survival forests are supported. Classification and regression forests are implemented as in the original Random Forest (Breiman 2001), survival forests as in Random Survival Forests (Ishwaran et al. 2008). Includes implementations of extremely randomized trees (Geurts et al. 2006) and quantile regression forests (Meinshausen 2006).
+[![R-CMD-check](https://github.com/perezxavi/crazyforest/workflows/R-CMD-check/badge.svg)](https://github.com/perezxavi/crazyforest/actions)
+![Version](https://img.shields.shields.io/badge/Version-0.1.0-orange.svg)
+![License: GPL v3](https://img.shields.shields.io/badge/License-GPLv3-blue.svg)
 
-crazyforest is written in C++, but a version for R is available, too. We recommend to use the R version. It is easy to install and use and the results are readily available for further analysis. The R version is as fast as the standalone C++ version.
+`crazyforest` is a high-performance framework designed for methodological research in Machine Learning. It enables the study of entropy and stochasticity in ensemble models by introducing randomness in both the decision-tree growth phase and the forest aggregation logic.
 
-### Installation
-#### R version
-To install the crazyforest R package from CRAN, just run
+Built on a high-speed C++ core, `crazyforest` replaces traditional greedy optimization with probabilistic tournaments and chaotic partitioning, making it ideal for large-scale simulations.
+
+## ✨ Core Stochastic Features
+
+The package introduces four specialized mechanisms to explore randomness in Random Forests:
+
+### 1. Chaos Split Rule
+* **Usage:** `splitrule = "chaos_split"`
+* **Mechanism:** Instead of selecting the locally optimal split, it conducts a random tournament among all candidate points. Each candidate receives a random score $U \sim [0,1]$, and the highest score wins.
+* **Audit Mode:** The algorithm "audits" the winner by calculating its actual Gini decrease in the background, allowing for valid **Variable Importance** extraction even from stochastic trees.
+
+### 2. Totally Random Trees
+* **Usage:** `splitrule = "totally_random"`
+* **Mechanism:** Bypasses all impurity calculations by selecting a variable and a cut-point entirely at random. 
+* **Use Case:** Ideal for studying recursive random partitioning and the "Wisdom of the Crowds" in high-dimensional spaces.
+
+### 3. Roulette Prediction Strategy
+* **Usage:** `predict_strategy = "roulette"`
+* **Mechanism:** Replaces strict majority voting with a probabilistic approach. The final class is sampled randomly, with weights proportional to the tree votes.
+
+### 4. Corrected Roulette
+* **Usage:** `predict_strategy = "corrected_roulette"`
+* **Mechanism:** An advanced stochastic voting system that normalizes class probabilities based on training set frequencies, neutralizing majority class bias in imbalanced datasets.
+
+
+
+## 🚀 Installation
 
 ```R
-install.packages("crazyforest")
-```
-
-R version >= 3.1 is required. With recent R versions, multithreading on Windows platforms should just work. If you compile yourself, the new RTools toolchain is required.
-
-To install the development version from GitHub using `devtools`, run
-
-```R
+# install.packages("devtools")
 devtools::install_github("perezxavi/crazyforest")
 ```
 
-#### Standalone C++ version
-To install the C++ version of crazyforest in Linux or Mac OS X you will need a compiler supporting C++14 (i.e. gcc >= 5 or Clang >= 3.4) and Cmake. To build start a terminal from the crazyforest main directory and run the following commands
+## 📊 Quick Start: Auditing the Chaos
 
-```bash
-cd cpp_version
-mkdir build
-cd build
-cmake ..
-make
+See how `chaos_split` identifies true signals by auditing the Gini decrease of random splits:
+
+```R
+library(crazyforest)
+
+# Generate synthetic data (Var1 and Var2 are signal)
+set.seed(42)
+n <- 2000
+X <- matrix(rnorm(n * 10), ncol = 10); colnames(X) <- paste0("Var", 1:10)
+prob <- 1 / (1 + exp(-(X[,1] * 2 + X[,2] * -1.5))) 
+df <- data.frame(Y = as.factor(ifelse(prob > 0.5, "A", "B")), X)
+
+# Grow a chaotic forest with audited importance
+model <- crazyforest(
+  Y ~ ., data = df, 
+  splitrule = "chaos_split", 
+  importance = "impurity", 
+  predict_strategy = "roulette"
+)
+
+# True predictors Var1 and Var2 will lead the importance ranking
+print(sort(model$variable.importance, decreasing = TRUE))
 ```
 
-After compilation there should be an executable called "crazyforest" in the build directory. 
-
-To run the C++ version in Microsoft Windows please cross compile or ask for a binary.
-
-### Usage
-#### R version
-For usage of the R version see ?crazyforest in R. Most importantly, see the Examples section. As a first example you could try 
-
-```R  
-crazyforest(Species ~ ., data = iris)
-```
-
-#### Standalone C++ version
-In the C++ version type 
-
-```bash
-./crazyforest --help 
-```
-
-for a list of commands. First you need a training dataset in a file. This file should contain one header line with variable names and one line with variable values per sample (numeric only). Variable names must not contain any whitespace, comma or semicolon. Values can be separated by whitespace, comma or semicolon but can not be mixed in one file. A typical call of crazyforest would be for example
-
-```bash
-./crazyforest --verbose --file data.dat --depvarname Species --treetype 1 --ntree 1000 --nthreads 4
-```
-
-If you find any bugs, or if you experience any crashes, please report to us. If you have any questions just ask, we won't bite. 
-
-Please cite our paper if you use crazyforest.
-
-### References
-* Pérez-Rodríguez, J. & García-Pedrajas, N. (2017). crazyforest: A fast implementation of random forests for high dimensional data in C++ and R. J Stat Softw 77:1-17. https://doi.org/10.18637/jss.v077.i01.
-* Schmid, M., Pérez-Rodríguez, J. & García-Pedrajas, N. (2016). On the use of Harrell's C for clinical risk prediction via random survival forests. Expert Syst Appl 63:450-459. https://doi.org/10.1016/j.eswa.2016.07.018.
-* Pérez-Rodríguez, J., Dankowski, T. & García-Pedrajas, N. (2017). Unbiased split variable selection for random survival forests using maximally selected rank statistics. Stat Med 36:1272-1284. https://doi.org/10.1002/sim.7212.
-* Nembrini, S., König, I. R. & Pérez-Rodríguez, J. (2018). The revival of the Gini Importance? Bioinformatics. https://doi.org/10.1093/bioinformatics/bty373.
-* Breiman, L. (2001). Random forests. Mach Learn, 45:5-32. https://doi.org/10.1023/A:1010933404324.
-* Ishwaran, H., Kogalur, U. B., Blackstone, E. H., & Lauer, M. S. (2008). Random survival forests. Ann Appl Stat 2:841-860. https://doi.org/10.1097/JTO.0b013e318233d835.
-* Malley, J. D., Kruppa, J., Dasgupta, A., Malley, K. G., & García-Pedrajas, N. (2012). Probability machines: consistent probability estimation using nonparametric learning machines. Methods Inf Med 51:74-81. https://doi.org/10.3414/ME00-01-0052.
-* Hastie, T., Tibshirani, R., Friedman, J. (2009). The Elements of Statistical Learning. Springer, New York. 2nd edition.
-* Geurts, P., Ernst, D., Wehenkel, L. (2006). Extremely randomized trees. Mach Learn 63:3-42. https://doi.org/10.1007/s10994-006-6226-1.
-* Meinshausen (2006). Quantile Regression Forests. J Mach Learn Res 7:983-999. http://www.jmlr.org/papers/v7/meinshausen06a.html.
-* Sandri, M. & Zuccolotto, P. (2008). A bias correction algorithm for the Gini variable importance measure in classification trees. J Comput Graph Stat, 17:611-628. https://doi.org/10.1198/106186008X344522.
-* Coppersmith D., Hong S. J., Hosking J. R. (1999). Partitioning nominal attributes in decision trees. Data Min Knowl Discov 3:197-217. https://doi.org/10.1023/A:1009869804967.
-
+## 📜 Acknowledgements
+`crazyforest` is distributed under the GPL3 license. The underlying high-performance C++ architecture is based on the `ranger` framework (Wright & Ziegler). This fork extends that core with novel stochastic splitting and voting methodologies.
