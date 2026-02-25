@@ -235,7 +235,9 @@ Rcpp::List crazyforestCpp(
 
     // Run CrazyForest
     forest->run(false, oob_error);
-    Rcpp::Rcout << "Forest run completed." << std::endl;
+    if (verbose) {
+      Rcpp::Rcout << "Forest run completed." << std::endl;
+    }
 
     if (use_split_select_weights && importance_mode != IMP_NONE) {
       if (verbose_out) {

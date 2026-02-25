@@ -16,7 +16,7 @@ expect_that(print(rf$forest), prints_text("CrazyForest forest object"))
 expect_that(print(predict(rf, iris)), prints_text("CrazyForest prediction"))
 
 ## Test str crazyforest function
-expect_that(str(rf), prints_text("List of 16"))
+expect_that(str(rf), prints_text("List of 17"))
 
 ## Test str forest function
-expect_that(str(rf$forest), prints_text("List of 9"))
+expect_that(str(rf$forest), prints_text("List of 11"))

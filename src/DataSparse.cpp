@@ -17,13 +17,10 @@
  Written by:
 
  Javier Pérez-Rodríguez
- Institut für Medizinische Biometrie und Statistik
- Universität zu Lübeck
- Ratzeburger Allee 160
- 23562 Lübeck
- Germany
 
- http://www.imbs-luebeck.de
+ Departamento de Ciencia de la Computación e Inteligencia Artificial
+ Universidad de Córdoba
+
  #-------------------------------------------------------------------------------*/
 
 #include "DataSparse.h"

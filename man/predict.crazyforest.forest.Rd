@@ -13,7 +13,7 @@
   se.method = "infjack",
   seed = NULL,
   num.threads = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   inbag.counts = NULL,
   ...
 )

@@ -15,7 +15,7 @@
   what = NULL,
   seed = NULL,
   num.threads = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   ...
 )
 }

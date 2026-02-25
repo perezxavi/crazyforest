@@ -1,4 +1,4 @@
-﻿bibentry(bibtype = "Article",
+bibentry(bibtype = "Article",
   title        = "{crazyforest}: A Fast Implementation of Crazy Forests for High Dimensional Data in {C++} and {R}",
   author       = c(person(given = "Javier",
                           family = "Pérez-Rodríguez",

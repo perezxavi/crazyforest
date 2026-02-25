@@ -73,10 +73,10 @@
 ##' @importFrom Matrix Matrix
 ##' @export
 predict.crazyforest.forest <- function(object, data, predict.all = FALSE,
-                                  num.trees = object$num.trees,
-                                  type = "response", se.method = "infjack",
-                                  seed = NULL, num.threads = NULL,
-                                  verbose = TRUE, inbag.counts = NULL, ...) {
+                                       num.trees = object$num.trees,
+                                       type = "response", se.method = "infjack",
+                                       seed = NULL, num.threads = NULL,
+                                       verbose = FALSE, inbag.counts = NULL, ...) {
   ## GenABEL GWA data
   if (inherits(data, "gwaa.data")) {
     snp.names <- snp.names(data)
@@ -523,12 +523,12 @@ predict.crazyforest.forest <- function(object, data, predict.all = FALSE,
 ##' @author Javier Pérez-Rodríguez
 ##' @export
 predict.crazyforest <- function(object, data = NULL, predict.all = FALSE,
-                           num.trees = object$num.trees,
-                           type = "response", se.method = "infjack",
-                           quantiles = c(0.1, 0.5, 0.9),
-                           what = NULL,
-                           seed = NULL, num.threads = NULL,
-                           verbose = TRUE, ...) {
+                                num.trees = object$num.trees,
+                                type = "response", se.method = "infjack",
+                                quantiles = c(0.1, 0.5, 0.9),
+                                what = NULL,
+                                seed = NULL, num.threads = NULL,
+                                verbose = FALSE, ...) {
   forest <- object$forest
   if (is.null(forest)) {
     stop("Error: No saved forest in crazyforest object. Please set write.forest to TRUE when calling crazyforest.")
@@ -595,5 +595,3 @@ predict.crazyforest <- function(object, data = NULL, predict.all = FALSE,
     predict(forest, data, predict.all, num.trees, type, se.method, seed, num.threads, verbose, object$inbag.counts, ...)
   }
 }
-
-

@@ -40,7 +40,7 @@ crazyforest(
   oob.error = TRUE,
   num.threads = NULL,
   save.memory = FALSE,
-  verbose = TRUE,
+  verbose = FALSE,
   node.stats = FALSE,
   seed = NULL,
   na.action = "na.learn",
@@ -93,6 +93,8 @@ For survival "logrank", "extratrees", "C" or "maxstat" with default "logrank".}
 
 \item{poisson.tau}{For "poisson" splitrule: The coefficient of variation of the (expected) frequency is \eqn{1/\tau}.
 If a terminal node has only 0 responses, the estimate is set to \eqn{\alpha 0 + (1-\alpha) mean(parent)} with \eqn{\alpha = samples(child) mean(parent) / (\tau + samples(child) mean(parent))}.}
+
+\item{predict_strategy}{Strategy for aggregating votes in probability/classification forests. One of 'majority' (default), 'roulette', or 'corrected_roulette'.}
 
 \item{split.select.weights}{Numeric vector with weights between 0 and 1, used to calculate the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used.}
 

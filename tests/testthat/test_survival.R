@@ -10,7 +10,7 @@ rg.surv <- crazyforest(Surv(time, status) ~ ., data = veteran, num.trees = 10)
 ## Basic tests (for all random forests equal)
 test_that("survival result is of class crazyforest with 18 elements", {
   expect_is(rg.surv, "crazyforest")
-  expect_equal(length(rg.surv), 18)
+  expect_equal(length(rg.surv), 19)
 })
 
 test_that("results have right number of trees", {
@@ -28,8 +28,8 @@ test_that("Alternative interface works for survival", {
 
 test_that("Alternative interface prediction works for survival", {
   rf <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", data = veteran, num.trees = 10)
-  expect_equal(predict(rf, veteran)$num.independent.variables, ncol(veteran) - 2) 
-  expect_equal(predict(rf, veteran[, setdiff(names(veteran), c("time", "status"))])$num.independent.variables, ncol(veteran) - 2) 
+  expect_equal(predict(rf, veteran)$num.independent.variables, ncol(veteran) - 2)
+  expect_equal(predict(rf, veteran[, setdiff(names(veteran), c("time", "status"))])$num.independent.variables, ncol(veteran) - 2)
 })
 
 test_that("Matrix interface works for survival", {
@@ -61,8 +61,10 @@ test_that("unique death times in survival result is right", {
 })
 
 test_that("C-index splitting works", {
-  rf <- crazyforest(Surv(time, status) ~ ., data = veteran, 
-               splitrule = "C", num.trees = 10)
+  rf <- crazyforest(Surv(time, status) ~ .,
+    data = veteran,
+    splitrule = "C", num.trees = 10
+  )
   expect_equal(rf$treetype, "Survival")
 })
 
@@ -75,20 +77,24 @@ test_that("Logrank splitting not working on classification data", {
 })
 
 test_that("No error if survival tree without OOB observations", {
-  dat <- data.frame(time = c(1,2), status = c(0,1), x = c(1,2))
+  dat <- data.frame(time = c(1, 2), status = c(0, 1), x = c(1, 2))
   expect_silent(crazyforest(Surv(time, status) ~ ., dat, num.trees = 1, num.threads = 1))
 })
 
 test_that("predict.all for survival returns 3d array of size samples x times x trees", {
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5)
   pred <- predict(rf, veteran, predict.all = TRUE)
-  
+
   expect_is(pred$survival, "array")
-  expect_equal(dim(pred$survival), 
-               c(nrow(veteran), length(pred$unique.death.times), rf$num.trees))
+  expect_equal(
+    dim(pred$survival),
+    c(nrow(veteran), length(pred$unique.death.times), rf$num.trees)
+  )
   expect_is(pred$chf, "array")
-  expect_equal(dim(pred$chf), 
-               c(nrow(veteran), length(pred$unique.death.times), rf$num.trees))
+  expect_equal(
+    dim(pred$chf),
+    c(nrow(veteran), length(pred$unique.death.times), rf$num.trees)
+  )
 })
 
 test_that("Mean of predict.all for survival is equal to forest prediction", {
@@ -101,7 +107,7 @@ test_that("Mean of predict.all for survival is equal to forest prediction", {
 test_that("timepoints() function returns timepoints", {
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5)
   expect_equal(timepoints(rf), rf$unique.death.times)
-  
+
   pred <- predict(rf, veteran)
   expect_equal(timepoints(pred), rf$unique.death.times)
 })
@@ -109,28 +115,32 @@ test_that("timepoints() function returns timepoints", {
 test_that("timepoints() working on survival forest only", {
   rf <- crazyforest(Species ~ ., iris, num.trees = 5)
   expect_error(timepoints(rf), "No timepoints found. Object is no Survival forest.")
-  
+
   pred <- predict(rf, iris)
   expect_error(timepoints(pred), "No timepoints found. Object is no Survival prediction object.")
 })
 
 test_that("Survival error without covariates", {
-  expect_error(crazyforest(Surv(time, status) ~ ., veteran[, c("time", "status")], num.trees = 5), 
-               "Error: No covariates found.")
+  expect_error(
+    crazyforest(Surv(time, status) ~ ., veteran[, c("time", "status")], num.trees = 5),
+    "Error: No covariates found."
+  )
 })
 
 test_that("Survival error for competing risk data", {
   sobj <- Surv(veteran$time, factor(sample(1:3, nrow(veteran), replace = TRUE)))
-  expect_error(crazyforest(y = sobj, x = veteran[, 1:2], num.trees = 5), 
-               "Error: Competing risks not supported yet\\. Use status=1 for events and status=0 for censoring\\.")
+  expect_error(
+    crazyforest(y = sobj, x = veteran[, 1:2], num.trees = 5),
+    "Error: Competing risks not supported yet\\. Use status=1 for events and status=0 for censoring\\."
+  )
 })
 
 test_that("Right unique time points without time.interest", {
   times <- sort(unique(veteran$time[veteran$status > 0]))
-  
+
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5)
   expect_equal(timepoints(rf), times)
-  
+
   rf <- crazyforest(y = Surv(veteran$time, veteran$status), x = veteran[, c(-3, -4)], num.trees = 5)
   expect_equal(timepoints(rf), times)
 })
@@ -138,36 +148,48 @@ test_that("Right unique time points without time.interest", {
 test_that("time.interest results in the right number of time points", {
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, time.interest = 20)
   expect_equal(length(timepoints(rf)), 20)
-  
-  rf <- crazyforest(y = Surv(veteran$time, veteran$status), x = veteran[, c(-3, -4)], 
-               num.trees = 5, time.interest = 20)
+
+  rf <- crazyforest(
+    y = Surv(veteran$time, veteran$status), x = veteran[, c(-3, -4)],
+    num.trees = 5, time.interest = 20
+  )
   expect_equal(length(timepoints(rf)), 20)
-  
-  rf <- crazyforest(y = cbind(veteran$time, veteran$status), x = veteran[, c(-3, -4)], 
-               num.trees = 5, time.interest = 20)
+
+  rf <- crazyforest(
+    y = cbind(veteran$time, veteran$status), x = veteran[, c(-3, -4)],
+    num.trees = 5, time.interest = 20
+  )
   expect_equal(length(timepoints(rf)), 20)
-  
-  rf <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", 
-               data = veteran, num.trees = 5, time.interest = 20)
+
+  rf <- crazyforest(
+    dependent.variable.name = "time", status.variable.name = "status",
+    data = veteran, num.trees = 5, time.interest = 20
+  )
   expect_equal(length(timepoints(rf)), 20)
 })
 
 test_that("time.interest results in the right time points", {
   times <- c(20, 100, 200, 1000)
-  
+
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, time.interest = times)
   expect_equal(timepoints(rf), times)
-  
-  rf <- crazyforest(y = Surv(veteran$time, veteran$status), x = veteran[, c(-3, -4)], 
-               num.trees = 5, time.interest = times)
+
+  rf <- crazyforest(
+    y = Surv(veteran$time, veteran$status), x = veteran[, c(-3, -4)],
+    num.trees = 5, time.interest = times
+  )
   expect_equal(timepoints(rf), times)
-  
-  rf <- crazyforest(y = cbind(veteran$time, veteran$status), x = veteran[, c(-3, -4)], 
-               num.trees = 5, time.interest = times)
+
+  rf <- crazyforest(
+    y = cbind(veteran$time, veteran$status), x = veteran[, c(-3, -4)],
+    num.trees = 5, time.interest = times
+  )
   expect_equal(timepoints(rf), times)
-  
-  rf <- crazyforest(dependent.variable.name = "time", status.variable.name = "status", 
-               data = veteran, num.trees = 5, time.interest = times)
+
+  rf <- crazyforest(
+    dependent.variable.name = "time", status.variable.name = "status",
+    data = veteran, num.trees = 5, time.interest = times
+  )
   expect_equal(timepoints(rf), times)
 })
 
@@ -176,5 +198,3 @@ test_that("If more unique time points requested then observed, use observed time
   rf <- crazyforest(Surv(time, status) ~ ., veteran, num.trees = 5, time.interest = 200)
   expect_equal(timepoints(rf), times)
 })
-
-

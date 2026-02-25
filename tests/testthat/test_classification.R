@@ -7,18 +7,18 @@ context("crazyforest_class")
 dat <- data.matrix(iris)
 
 rg.class <- crazyforest(Species ~ ., data = iris)
-rg.mat   <- crazyforest(dependent.variable.name = "Species", data = dat, classification = TRUE)
+rg.mat <- crazyforest(dependent.variable.name = "Species", data = dat, classification = TRUE)
 
 ## Basic tests (for all random forests equal)
 test_that("classification result is of class crazyforest with 16 elements", {
   expect_is(rg.class, "crazyforest")
-  expect_equal(length(rg.class), 16)
+  expect_equal(length(rg.class), 17)
 })
 
 test_that("classification prediction returns factor", {
   expect_is(rg.class$predictions, "factor")
   expect_null(dim(rg.class$predictions))
-  
+
   pred <- predict(rg.class, iris)
   expect_is(pred$predictions, "factor")
   expect_null(dim(pred$predictions))
@@ -43,7 +43,7 @@ test_that("Matrix interface works for classification", {
 })
 
 test_that("Matrix interface prediction works for classification", {
-    expect_silent(predict(rg.mat, dat))
+  expect_silent(predict(rg.mat, dat))
 })
 
 test_that("save.memory option works for classification", {
@@ -55,8 +55,10 @@ test_that("predict.all for classification returns numeric matrix of size trees x
   rf <- crazyforest(Species ~ ., iris, num.trees = 5, write.forest = TRUE)
   pred <- predict(rf, iris, predict.all = TRUE)
   expect_is(pred$predictions, "matrix")
-  expect_equal(dim(pred$predictions), 
-              c(nrow(iris), rf$num.trees))
+  expect_equal(
+    dim(pred$predictions),
+    c(nrow(iris), rf$num.trees)
+  )
 })
 
 test_that("Majority vote of predict.all for classification is equal to forest prediction", {
@@ -79,12 +81,12 @@ test_that("Majority vote of predict.all for classification is equal to forest pr
 
 test_that("Alternative interface classification prediction works if only independent variable given, one independent variable", {
   n <- 50
-  
+
   dt <- data.frame(x = runif(n), y = factor(rbinom(n, 1, 0.5)))
   rf <- crazyforest(dependent.variable.name = "y", data = dt, num.trees = 5, write.forest = TRUE)
   expect_silent(predict(rf, dt))
   expect_silent(predict(rf, dt[, 1, drop = FALSE]))
-  
+
   dt2 <- data.frame(y = factor(rbinom(n, 1, 0.5)), x = runif(n))
   rf <- crazyforest(dependent.variable.name = "y", data = dt2, num.trees = 5, write.forest = TRUE)
   expect_silent(predict(rf, dt2))
@@ -93,12 +95,12 @@ test_that("Alternative interface classification prediction works if only indepen
 
 test_that("Alternative interface classification prediction works if only independent variable given, two independent variables", {
   n <- 50
-  
+
   dt <- data.frame(x1 = runif(n), x2 = runif(n), y = factor(rbinom(n, 1, 0.5)))
   rf <- crazyforest(dependent.variable.name = "y", data = dt, num.trees = 5, write.forest = TRUE)
   expect_silent(predict(rf, dt))
   expect_silent(predict(rf, dt[, 1:2]))
-  
+
   dt2 <- data.frame(y = factor(rbinom(n, 1, 0.5)), x1 = runif(n), x2 = runif(n))
   rf <- crazyforest(dependent.variable.name = "y", data = dt2, num.trees = 5, write.forest = TRUE)
   expect_silent(predict(rf, dt2))
@@ -108,38 +110,48 @@ test_that("Alternative interface classification prediction works if only indepen
 ## Special tests for random forests for classification
 test_that("predict works for single observations, classification", {
   pred <- predict(rg.class, head(iris, 1))
-  expect_equal(pred$predictions, iris[1,"Species"])
+  expect_equal(pred$predictions, iris[1, "Species"])
 })
 
 test_that("confusion matrix is of right dimension", {
-  expect_equal(dim(rg.class$confusion.matrix), 
-               rep(nlevels(iris$Species), 2))
+  expect_equal(
+    dim(rg.class$confusion.matrix),
+    rep(nlevels(iris$Species), 2)
+  )
 })
 
 test_that("confusion matrix has right dimnames", {
-  expect_equal(dimnames(rg.class$confusion.matrix),
-               list(true = levels(iris$Species), predicted = levels(iris$Species)))
+  expect_equal(
+    dimnames(rg.class$confusion.matrix),
+    list(true = levels(iris$Species), predicted = levels(iris$Species))
+  )
 })
 
 test_that("confusion matrix rows are the true classes", {
-  expect_equal(as.numeric(rowSums(rg.class$confusion.matrix)), 
-               as.numeric(table(iris$Species)))
+  expect_equal(
+    as.numeric(rowSums(rg.class$confusion.matrix)),
+    as.numeric(table(iris$Species))
+  )
 })
 
 test_that("confusion matrix rows are the true classes if using case weights", {
-  rf <- crazyforest(Species ~ ., data = iris, num.trees = 5, 
-               case.weights = c(rep(100, 5), rep(5, 145)))
-  expect_equal(as.numeric(rowSums(rf$confusion.matrix)), 
-               as.numeric(table(iris$Species)))
+  rf <- crazyforest(Species ~ .,
+    data = iris, num.trees = 5,
+    case.weights = c(rep(100, 5), rep(5, 145))
+  )
+  expect_equal(
+    as.numeric(rowSums(rf$confusion.matrix)),
+    as.numeric(table(iris$Species))
+  )
 })
 ## Splitrule
 test_that("default splitrule is Gini for classification", {
   set.seed(42)
   rf1 <- crazyforest(Species ~ ., iris, num.trees = 5)
-  
+
   set.seed(42)
   rf2 <- crazyforest(Species ~ ., iris, num.trees = 5, splitrule = "gini")
-  
+
   expect_equal(rf1$splitrule, "gini")
   expect_equal(rf2$splitrule, "gini")
   expect_equal(rf1$prediction.error, rf2$prediction.error)
@@ -148,10 +160,10 @@ test_that("default splitrule is Gini for classification", {
 test_that("default splitrule is Gini for probability", {
   set.seed(42)
   rf1 <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE)
-  
+
   set.seed(42)
   rf2 <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE, splitrule = "gini")
-  
+
   expect_equal(rf1$splitrule, "gini")
   expect_equal(rf2$splitrule, "gini")
   expect_equal(rf1$prediction.error, rf2$prediction.error)
@@ -160,10 +172,10 @@ test_that("default splitrule is Gini for probability", {
 test_that("splitrule extratrees is different from Gini for classification", {
   set.seed(42)
   rf1 <- crazyforest(Species ~ ., iris, num.trees = 5, splitrule = "extratrees")
-  
+
   set.seed(42)
   rf2 <- crazyforest(Species ~ ., iris, num.trees = 5, splitrule = "gini")
-  
+
   expect_equal(rf1$splitrule, "extratrees")
   expect_equal(rf2$splitrule, "gini")
   expect_false(rf1$prediction.error == rf2$prediction.error)
@@ -172,41 +184,49 @@ test_that("splitrule extratrees is different from Gini for classification", {
 test_that("splitrule extratrees is different from Gini for probability", {
   set.seed(42)
   rf1 <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE, splitrule = "extratrees")
-  
+
   set.seed(42)
   rf2 <- crazyforest(Species ~ ., iris, num.trees = 5, probability = TRUE, splitrule = "gini")
-  
+
   expect_equal(rf1$splitrule, "extratrees")
   expect_equal(rf2$splitrule, "gini")
   expect_false(rf1$prediction.error == rf2$prediction.error)
 })
 
 test_that("Working with numerically almost exact splitting values", {
-  dat <- data.frame(a = factor(1:2), 
-                    z = c(1.7629414498915687570246291215880773, 
-                          1.7629414498915689790692340466193854))
+  dat <- data.frame(
+    a = factor(1:2),
+    z = c(
+      1.7629414498915687570246291215880773,
+      1.7629414498915689790692340466193854
+    )
+  )
   expect_silent(crazyforest(a ~ ., data = dat, num.threads = 1, num.trees = 1))
 })
 
 test_that("No error if unused factor levels in outcome", {
-  expect_warning(rf <- crazyforest(Species ~ ., iris[1:100, ], num.trees = 5),
-                 "^Dropped unused factor level\\(s\\) in dependent variable\\: virginica\\.")
+  expect_warning(
+    rf <- crazyforest(Species ~ ., iris[1:100, ], num.trees = 5),
+    "^Dropped unused factor level\\(s\\) in dependent variable\\: virginica\\."
+  )
   pred <- predict(rf, iris)
   expect_equal(levels(pred$predictions), levels(iris$Species))
 })
 
 test_that("Predictions with unused factor levels are not NA", {
-  expect_warning(rf <- crazyforest(Species ~ ., iris[51:150, ], num.trees = 5),
-                 "^Dropped unused factor level\\(s\\) in dependent variable\\: setosa\\.")
+  expect_warning(
+    rf <- crazyforest(Species ~ ., iris[51:150, ], num.trees = 5),
+    "^Dropped unused factor level\\(s\\) in dependent variable\\: setosa\\."
+  )
   pred <- predict(rf, iris)
   expect_equal(sum(is.na(pred$predictions)), 0)
 })
 
 test_that("classification with logical returns factor", {
-  rf <- crazyforest(Species=="setosa" ~ ., data = iris, num.trees = 5)
+  rf <- crazyforest(Species == "setosa" ~ ., data = iris, num.trees = 5)
   expect_is(rf$predictions, "numeric")
   expect_null(dim(rf$predictions))
-  
+
   pred <- predict(rf, iris)
   expect_is(pred$predictions, "numeric")
   expect_null(dim(pred$predictions))

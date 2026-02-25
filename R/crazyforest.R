@@ -123,6 +123,7 @@
 ##' @param minprop For "maxstat" splitrule: Lower quantile of covariate distribution to be considered for splitting.
 ##' @param poisson.tau For "poisson" splitrule: The coefficient of variation of the (expected) frequency is \eqn{1/\tau}.
 ##'   If a terminal node has only 0 responses, the estimate is set to \eqn{\alpha 0 + (1-\alpha) mean(parent)} with \eqn{\alpha = samples(child) mean(parent) / (\tau + samples(child) mean(parent))}.
+##' @param predict_strategy Strategy for aggregating votes in probability/classification forests. One of 'majority' (default), 'roulette', or 'corrected_roulette'.
 ##' @param split.select.weights Numeric vector with weights between 0 and 1, used to calculate the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used.
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details.
@@ -250,7 +251,7 @@ crazyforest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                         keep.inbag = FALSE, inbag = NULL, holdout = FALSE,
                         quantreg = FALSE, time.interest = NULL, oob.error = TRUE,
                         num.threads = NULL, save.memory = FALSE,
-                        verbose = TRUE, node.stats = FALSE, seed = NULL, na.action = "na.learn",
+                        verbose = FALSE, node.stats = FALSE, seed = NULL, na.action = "na.learn",
                         dependent.variable.name = NULL, status.variable.name = NULL,
                         classification = NULL, x = NULL, y = NULL, ...) {
   ## Handle ... arguments
@@ -1038,7 +1039,6 @@ crazyforest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     predict_strategy_int <- 2
   } else if (predict_strategy == "corrected_roulette") {
     predict_strategy_int <- 3
-    print(paste("Treetype:", treetype))
     if (treetype %in% c(1, 9)) {
       tab <- table(y)
       class_frequencies <- as.numeric(tab / sum(tab))
@@ -1046,11 +1046,8 @@ crazyforest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     } else {
       stop("Error: corrected_roulette strategy only applicable to classification forests.")
     }
-  } else {
-    stop("Error: Unknown prediction strategy.")
-  }
+  } else {}
 
-  message("Calling crazyforestCpp...")
   result <- crazyforestCpp(
     treetype, x, y.mat, independent.variable.names, mtry,
     num.trees, verbose, seed, num.threads, write.forest, importance.mode,
@@ -1065,8 +1062,6 @@ crazyforest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     regularization.factor, use.regularization.factor, regularization.usedepth,
     node.stats, time.interest, use.time.interest, any.na, predict_strategy_int, class_frequencies
   )
-  message("Back from crazyforestCpp.")
-
 
   if (length(result) == 0) {
     stop("User interrupt or internal error.")
