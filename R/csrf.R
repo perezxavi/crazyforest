@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -27,11 +27,11 @@
 # -------------------------------------------------------------------------------
 
 ##' Case-specific random forests.
-##' 
-##' In case-specific random forests (CSRF), random forests are built specific to the cases of interest. 
+##'
+##' In case-specific random forests (CSRF), random forests are built specific to the cases of interest.
 ##' Instead of using equal probabilities, the cases are weighted according to their difference to the case of interest.
-##' 
-##' The algorithm consists of 3 steps: 
+##'
+##' The algorithm consists of 3 steps:
 ##' \enumerate{
 ##'   \item Grow a random forest on the training data
 ##'   \item For each observation of interest (test data), the weights of all training observations are computed by counting the number of trees in which both observations are in the same terminal node.
@@ -43,8 +43,8 @@
 ##' @param formula Object of class \code{formula} or \code{character} describing the model to fit.
 ##' @param training_data Training data of class \code{data.frame}.
 ##' @param test_data Test data of class \code{data.frame}.
-##' @param params1 Parameters for the proximity random forest grown in the first step. 
-##' @param params2 Parameters for the prediction random forests grown in the second step. 
+##' @param params1 Parameters for the proximity random forest grown in the first step.
+##' @param params2 Parameters for the prediction random forests grown in the second step.
 ##' @param verbose Logical indicating whether or not to print computation progress.
 ##'
 ##' @return Predictions for the test dataset.
@@ -54,51 +54,55 @@
 ##' train.idx <- sample(nrow(iris), 2/3 * nrow(iris))
 ##' iris.train <- iris[train.idx, ]
 ##' iris.test <- iris[-train.idx, ]
-##' 
+##'
 ##' ## Run case-specific RF
-##' csrf(Species ~ ., training_data = iris.train, test_data = iris.test, 
-##'      params1 = list(num.trees = 50, mtry = 4), 
+##' csrf(Species ~ ., training_data = iris.train, test_data = iris.test,
+##'      params1 = list(num.trees = 50, mtry = 4),
 ##'      params2 = list(num.trees = 5))
-##' 
+##'
 ##' @author Javier Pérez-Rodríguez
 ##' @references
 ##'   Xu, R., Nettleton, D. & Nordman, D.J. (2014). Case-specific random forests. J Comp Graph Stat 25:49-65. \doi{10.1080/10618600.2014.983641}.
 ##' @export
 csrf <- function(formula, training_data, test_data, params1 = list(), params2 = list(), verbose = FALSE) {
   ## Grow a random forest on the training data to obtain weights
-  rf.proximity <- do.call(crazyforest, c(list(formula = formula, data = training_data, 
-                                         write.forest = TRUE), params1))
-  
+  rf.proximity <- do.call(crazyforest, c(list(
+    formula = formula, data = training_data,
+    write.forest = TRUE
+  ), params1))
+
   ## Get terminal nodes
   terminal.nodeIDs.train <- predict(rf.proximity, training_data, type = "terminalNodes")$predictions
   terminal.nodeIDs.test <- predict(rf.proximity, test_data, type = "terminalNodes")$predictions
-  
+
   ## Grow weighted RFs for test observations, predict the outcome
   predictions <- sapply(1:nrow(test_data), function(i) {
     ## Print computation progress
     if (isTRUE(verbose)) {
-      message("Computing case-specific prediction for test observation ", 
-              i, " of ", nrow(test_data), ". (", round(i / nrow(test_data) * 100, digits = 2), 
-              "% complete.)")  
+      message(
+        "Computing case-specific prediction for test observation ",
+        i, " of ", nrow(test_data), ". (", round(i / nrow(test_data) * 100, digits = 2),
+        "% complete.)"
+      )
     }
-    
+
     ## Compute weights from first RF
     num.same.node <- colSums(terminal.nodeIDs.test[i, ] == t(terminal.nodeIDs.train))
     weights <- num.same.node / sum(num.same.node)
-    
+
     ## Grow weighted RF
-    rf.prediction <- do.call(crazyforest, c(list(formula = formula, data = training_data, 
-                                            write.forest = TRUE, case.weights = weights), 
-                                       params2))
-    
+    rf.prediction <- do.call(crazyforest, c(
+      list(
+        formula = formula, data = training_data,
+        write.forest = TRUE, case.weights = weights
+      ),
+      params2
+    ))
+
     ## Predict outcome
     predict(rf.prediction, test_data[i, ])$predictions
   })
-  
+
   ## Return predictions
   predictions
 }
-
-
-
-

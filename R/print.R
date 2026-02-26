@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ print.crazyforest <- function(x, ...) {
     cat("Number of random splits:         ", x$num.random.splits, "\n")
   }
   if (x$treetype == "Classification") {
-    cat("OOB prediction error:            ", sprintf("%1.2f %%", 100*x$prediction.error), "\n")
+    cat("OOB prediction error:            ", sprintf("%1.2f %%", 100 * x$prediction.error), "\n")
   } else if (x$treetype == "Regression") {
     cat("OOB prediction error (MSE):      ", x$prediction.error, "\n")
   } else if (x$treetype == "Survival") {
@@ -103,15 +103,30 @@ print.crazyforest.prediction <- function(x, ...) {
   }
 }
 
+##' Print structure of a CrazyForest forest object.
+##'
+##' @title str method for CrazyForest forest
+##' @param object Object of class 'crazyforest.forest'.
+##' @param max.level Maximum level of nesting to display.
+##' @param ... Further arguments passed to \code{str}.
+##' @keywords internal
+##' @method str crazyforest.forest
 ##' @export
 str.crazyforest.forest <- function(object, max.level = 2, ...) {
   class(object) <- "list"
   str(object, max.level = max.level, ...)
 }
 
+##' Print structure of a CrazyForest object.
+##'
+##' @title str method for CrazyForest
+##' @param object Object of class 'crazyforest'.
+##' @param max.level Maximum level of nesting to display.
+##' @param ... Further arguments passed to \code{str}.
+##' @keywords internal
+##' @method str crazyforest
 ##' @export
 str.crazyforest <- function(object, max.level = 2, ...) {
   class(object) <- "list"
   str(object, max.level = max.level, ...)
 }
-

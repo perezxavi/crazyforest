@@ -47,6 +47,7 @@
 using namespace crazyforest;
 
 // [[Rcpp::depends(RcppEigen)]]
+//' @keywords internal
 // [[Rcpp::export]]
 Rcpp::List crazyforestCpp(
     unsigned int treetype, Rcpp::NumericMatrix &input_x,

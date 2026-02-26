@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -28,24 +28,26 @@
 
 
 #' Hierarchical shrinkage
-#' 
-#' Apply hierarchical shrinkage to a crazyforest object. 
-#' Hierarchical shrinkage is a regularization technique that recursively shrinks node predictions towards parent node predictions. 
+#'
+#' Apply hierarchical shrinkage to a crazyforest object.
+#' Hierarchical shrinkage is a regularization technique that recursively shrinks node predictions towards parent node predictions.
 #' For details see Agarwal et al. (2022).
 #'
-#' @param rf crazyforest object, created with \code{node.stats = TRUE}. 
-#' @param lambda Non-negative shrinkage parameter. 
+#' @param rf crazyforest object, created with \code{node.stats = TRUE}.
+#' @param lambda Non-negative shrinkage parameter.
 #'
-#' @return The crazyforest object is modified in-place. 
+#' @return The crazyforest object is modified in-place.
 #'
 #' @examples
 #' ## Hierarchical shrinkage for a probablity forest
 #' rf <- crazyforest(Species ~ ., iris, node.stats = TRUE, probability = TRUE)
 #' hshrink(rf, lambda = 5)
-##' @references
-##' \itemize{
-##'   \item Agarwal, A., Tan, Y.S., Ronen, O., Singh, C. & Yu, B. (2022). Hierarchical Shrinkage: Improving the accuracy and interpretability of tree-based models. Proceedings of the 39th International Conference on Machine Learning, PMLR 162:111-135.
-##'   }
+#' #' @references
+#' #' \itemize{
+#' #'   \item Agarwal, A., Tan, Y.S., Ronen, O., Singh, C. & Yu, B. (2022). Hierarchical Shrinkage: \
+#' #' Improving the accuracy and interpretability of tree-based models. \
+#' #' Proceedings of the 39th International Conference on Machine Learning, PMLR 162:111-135.
+#' #'   }
 #' @author Javier Pérez-Rodríguez
 #' @export
 hshrink <- function(rf, lambda) {
@@ -55,12 +57,12 @@ hshrink <- function(rf, lambda) {
   if (lambda < 0) {
     stop("Shrinkage parameter lambda has to be non-negative.")
   }
-  
+
   if (rf$treetype == "Regression") {
     invisible(lapply(1:rf$num.trees, function(treeID) {
       hshrink_regr(
-        rf$forest$child.nodeIDs[[treeID]][[1]], rf$forest$child.nodeIDs[[treeID]][[2]], 
-        rf$forest$num.samples.nodes[[treeID]], rf$forest$node.predictions[[treeID]], 
+        rf$forest$child.nodeIDs[[treeID]][[1]], rf$forest$child.nodeIDs[[treeID]][[2]],
+        rf$forest$num.samples.nodes[[treeID]], rf$forest$node.predictions[[treeID]],
         rf$forest$split.values[[treeID]], lambda, 0, 0, 0, 0
       )
     }))
@@ -68,15 +70,15 @@ hshrink <- function(rf, lambda) {
     invisible(lapply(1:rf$num.trees, function(treeID) {
       # Create temporary class frequency matrix
       class_freq <- t(simplify2array(rf$forest$terminal.class.counts[[treeID]]))
-      
+
       parent_pred <- rep(0, length(rf$forest$class.values))
       cum_sum <- rep(0, length(rf$forest$class.values))
       hshrink_prob(
-        rf$forest$child.nodeIDs[[treeID]][[1]], rf$forest$child.nodeIDs[[treeID]][[2]], 
-        rf$forest$num.samples.nodes[[treeID]], class_freq, 
-        lambda, 0, 0, parent_pred, cum_sum 
+        rf$forest$child.nodeIDs[[treeID]][[1]], rf$forest$child.nodeIDs[[treeID]][[2]],
+        rf$forest$num.samples.nodes[[treeID]], class_freq,
+        lambda, 0, 0, parent_pred, cum_sum
       )
-      
+
       # Assign temporary matrix values back to crazyforest object
       replace_class_counts(rf$forest$terminal.class.counts[[treeID]], class_freq)
     }))
@@ -87,8 +89,4 @@ hshrink <- function(rf, lambda) {
   } else {
     stop("Unknown treetype.")
   }
-  
 }
-
-
-

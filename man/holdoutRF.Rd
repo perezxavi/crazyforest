@@ -13,7 +13,7 @@ holdoutRF(...)
 Hold-out random forests with variable importance.
 }
 \description{
-Grow two random forests on two cross-validation folds. 
+Grow two random forests on two cross-validation folds.
 Instead of out-of-bag data, the other fold is used to compute permutation importance.
 Related to the novel permutation variable importance by Janitza et al. (2015).
 }

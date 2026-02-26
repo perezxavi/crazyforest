@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -26,13 +26,13 @@
 # javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
-##' This function is deprecated. 
+##' This function is deprecated.
 ##' Please use predict() with \code{type = "terminalNodes"} instead.
-##' This function calls predict() now. 
+##' This function calls predict() now.
 ##'
 ##' @title Get terminal node IDs (deprecated)
 ##' @param rf \code{crazyforest} object.
-##' @param dat New dataset. Terminal node IDs for this dataset are obtained. 
+##' @param dat New dataset. Terminal node IDs for this dataset are obtained.
 ##'
 ##' @return Matrix with terminal nodeIDs for all observations in dataset and trees.
 ##'
@@ -44,5 +44,3 @@ getTerminalNodeIDs <- function(rf, dat) {
   warning("Function getTerminalNodeIDs() deprecated, calling predict().")
   predict(rf, dat, type = "terminalNodes")$predictions
 }
-
-

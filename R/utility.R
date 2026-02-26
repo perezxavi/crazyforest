@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -26,54 +26,62 @@
 # javier.perez@uco.es
 # -------------------------------------------------------------------------------
 
-# Convert integer to factor
+#' Convert integer to factor
+#' @keywords internal
+#' @noRd
 integer.to.factor <- function(x, labels) {
   factor(x, levels = seq_along(labels), labels = labels)
 }
 
-# Save version of sample() for length(x) == 1
-# See help(sample)
+#' Safe version of sample() for length(x) == 1
+#' @keywords internal
+#' @noRd
 save.sample <- function(x, ...) {
   x[sample.int(length(x), ...)]
 }
 
-# Order factor levels with PCA approach 
-# Reference: Coppersmith, D., Hong, S.J. & Hosking, J.R. (1999) Partitioning Nominal Attributes in Decision Trees. Data Min Knowl Discov 3:197. \doi{10.1023/A:1009869804967}.
+#' Order factor levels using a PCA approach
+#' @keywords internal
+#' @noRd
 pca.order <- function(y, x) {
   x <- droplevels(x)
   if (nlevels(x) < 2) {
     return(as.character(levels(x)))
   }
-  
+
   ## Create contingency table of the nominal outcome with the nominal covariate
   N <- table(x, droplevels(y))
-  
+
   ## PCA of weighted covariance matrix of class probabilites
-  P <- N/rowSums(N)
+  P <- N / rowSums(N)
   S <- cov.wt(P, wt = rowSums(N))$cov
   pc1 <- prcomp(S, rank. = 1)$rotation
   score <- P %*% pc1
-  
+
   ## Return ordered factor levels
   as.character(levels(x)[order(score)])
 }
 
-# Compute median survival if available or largest quantile available in all strata if median not available.
+#' Compute median or largest available survival quantile
+#' @keywords internal
+#' @noRd
 largest.quantile <- function(formula) {
   ## Fit survival model
   fit <- survival::survfit(formula)
   smry <- summary(fit)
-  
+
   ## Use median survival if available or largest quantile available in all strata if median not available
   max_quant <- max(aggregate(smry$surv ~ smry$strata, FUN = min)[, "smry$surv"])
   quantiles <- quantile(fit, conf.int = FALSE, prob = min(0.5, 1 - max_quant))[, 1]
   names(quantiles) <- gsub(".+=", "", names(quantiles))
-  
+
   ## Return ordered levels
   names(sort(quantiles))
 }
 
-# Convert crazyforest object from version <0.11.5 (without x/y interface)
+#' Convert old crazyforest object (pre x/y interface) to current format
+#' @keywords internal
+#' @noRd
 convert.pre.xy <- function(forest, trees = 1:forest$num.trees) {
   if (is.null(forest$status.varID)) {
     # Not survival
@@ -92,6 +100,3 @@ convert.pre.xy <- function(forest, trees = 1:forest$num.trees) {
   }
   return(forest)
 }
-
-
-

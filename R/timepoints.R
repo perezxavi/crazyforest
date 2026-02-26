@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 # -------------------------------------------------------------------------------
 
 ##' @export
-timepoints <- function(x, ...)  UseMethod("timepoints")
+timepoints <- function(x, ...) UseMethod("timepoints")
 
 ##' Extract unique death times of CrazyForest Survival prediction object.
 ##'
@@ -38,6 +38,7 @@ timepoints <- function(x, ...)  UseMethod("timepoints")
 ##' @return Unique death times
 ##' @seealso \code{\link{crazyforest}}
 ##' @author Javier Pérez-Rodríguez
+##' @method timepoints crazyforest.prediction
 ##' @export
 timepoints.crazyforest.prediction <- function(x, ...) {
   if (!inherits(x, "crazyforest.prediction")) {
@@ -62,6 +63,7 @@ timepoints.crazyforest.prediction <- function(x, ...) {
 ##' @seealso \code{\link{crazyforest}}
 ##' @author Javier Pérez-Rodríguez
 ##' @aliases timepoints
+##' @method timepoints crazyforest
 ##' @export
 timepoints.crazyforest <- function(x, ...) {
   if (!inherits(x, "crazyforest")) {
@@ -75,4 +77,3 @@ timepoints.crazyforest <- function(x, ...) {
   }
   return(x$unique.death.times)
 }
-

@@ -1,4 +1,4 @@
-﻿# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 #   This file is part of CrazyForest.
 #
 # CrazyForest is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 # -------------------------------------------------------------------------------
 
 ##' @export
-predictions <- function(x, ...)  UseMethod("predictions")
+predictions <- function(x, ...) UseMethod("predictions")
 
 ##' Extract predictions of CrazyForest prediction object.
 ##'
@@ -39,6 +39,7 @@ predictions <- function(x, ...)  UseMethod("predictions")
 ##' @seealso \code{\link{crazyforest}}
 ##' @author Javier Pérez-Rodríguez
 ##' @aliases predictions
+##' @method predictions crazyforest.prediction
 ##' @export
 predictions.crazyforest.prediction <- function(x, ...) {
   if (!inherits(x, "crazyforest.prediction")) {
@@ -70,6 +71,7 @@ predictions.crazyforest.prediction <- function(x, ...) {
 ##' @return Predictions: Classes for Classification forests, Numerical values for Regressions forests and the estimated survival functions for all individuals for Survival forests.
 ##' @seealso \code{\link{crazyforest}}
 ##' @author Javier Pérez-Rodríguez
+##' @method predictions crazyforest
 ##' @export
 predictions.crazyforest <- function(x, ...) {
   if (!inherits(x, "crazyforest")) {
@@ -92,6 +94,12 @@ predictions.crazyforest <- function(x, ...) {
   }
 }
 
+##' @title as.data.frame method for CrazyForest prediction
+##' @param x CrazyForest prediction object.
+##' @param ... Further arguments passed to or from other methods.
+##' @return Predictions as data frame.
+##' @author Javier Pérez-Rodríguez
+##' @method as.data.frame crazyforest.prediction
 ##' @export
 as.data.frame.crazyforest.prediction <- function(x, ...) {
   if (x$treetype == "Survival") {
@@ -102,11 +110,10 @@ as.data.frame.crazyforest.prediction <- function(x, ...) {
   } else {
     df <- data.frame(prediction = x$predictions)
   }
-  
+
   if (!is.null(x$se)) {
     df$se <- x$se
   }
-  
-  df
-} 
 
+  df
+}

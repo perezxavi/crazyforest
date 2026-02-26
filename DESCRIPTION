@@ -1,7 +1,7 @@
 Package: crazyforest
 Type: Package
-Title: A Fast Implementation of Random Forests
-Version: 0.18.0
+Title: A Fast Implementation of Crazy Forests
+Version: 0.1.0
 Date: 2026-01-15
 Authors@R: c(
     person("Javier", "Pérez-Rodríguez", email = "javier.perez@uco.es", role = c("aut", "cre")),

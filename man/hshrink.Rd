@@ -15,19 +15,20 @@ hshrink(rf, lambda)
 The crazyforest object is modified in-place.
 }
 \description{
-Apply hierarchical shrinkage to a crazyforest object. 
-Hierarchical shrinkage is a regularization technique that recursively shrinks node predictions towards parent node predictions. 
+Apply hierarchical shrinkage to a crazyforest object.
+Hierarchical shrinkage is a regularization technique that recursively shrinks node predictions towards parent node predictions.
 For details see Agarwal et al. (2022).
 }
 \examples{
 ## Hierarchical shrinkage for a probablity forest
 rf <- crazyforest(Species ~ ., iris, node.stats = TRUE, probability = TRUE)
 hshrink(rf, lambda = 5)
-}
-\references{
-\itemize{
-  \item Agarwal, A., Tan, Y.S., Ronen, O., Singh, C. & Yu, B. (2022). Hierarchical Shrinkage: Improving the accuracy and interpretability of tree-based models. Proceedings of the 39th International Conference on Machine Learning, PMLR 162:111-135.
-  }
+#' @references
+#' \itemize{
+#'   \item Agarwal, A., Tan, Y.S., Ronen, O., Singh, C. & Yu, B. (2022). Hierarchical Shrinkage: \
+#' Improving the accuracy and interpretability of tree-based models. \
+#' Proceedings of the 39th International Conference on Machine Learning, PMLR 162:111-135.
+#'   }
 }
 \author{
 Javier Pérez-Rodríguez
