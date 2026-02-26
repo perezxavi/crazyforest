@@ -1,18 +1,20 @@
 Package: crazyforest
 Type: Package
-Title: A Fast Implementation of Crazy Forests
+Title: Random Forests with Stochastic Splitting and Voting
 Version: 0.1.0
 Date: 2026-01-15
 Authors@R: c(
     person("Javier", "Pérez-Rodríguez", email = "javier.perez@uco.es", role = c("aut", "cre")),
     person("Nicolás", "García-Pedrajas", role = "ctb")
     )
-Description: A fast implementation of Crazy Forests, particularly suited for high
-          dimensional data. Ensembles of classification, regression, survival and
-          probability prediction trees are supported. Data from genome-wide association
-          studies can be analyzed efficiently. In addition to data frames, datasets of
-          class 'gwaa.data' (R package 'GenABEL') and 'dgCMatrix' (R package 'Matrix') 
-          can be directly analyzed.
+Description: A fast implementation of Crazy Forests, a stochastic variant of 
+    Random Forests particularly suited for high-dimensional data. Introduces 
+    experimental research features such as chaos-based splitting rules and 
+    probabilistic roulette voting mechanisms. Ensembles of classification, 
+    regression, survival, and probability prediction trees are supported. 
+    Efficiently handles large datasets, including direct support for sparse 
+    matrices of class 'dgCMatrix' (from the 'Matrix' package). Optimized for 
+    methodological research and high-performance computing via C++.
 License: GPL-3
 Imports: Rcpp (>= 0.11.2), Matrix
 LinkingTo: Rcpp, RcppEigen
