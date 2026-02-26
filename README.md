@@ -2,9 +2,9 @@
 
 <!-- badges: start -->
   [![R-CMD-check](https://github.com/perezxavi/crazyforest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/perezxavi/crazyforest/actions/workflows/R-CMD-check.yaml)
+  [![Version](https://img.shields.shields.io/badge/Version-0.1.0-orange.svg)](https://github.com/perezxavi/crazyforest/releases)
+  [![License: GPL v3](https://img.shields.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/perezxavi/crazyforest/blob/master/DESCRIPTION)
   <!-- badges: end -->
-![Version](https://img.shields.shields.io/badge/Version-0.1.0-orange.svg)
-![License: GPL v3](https://img.shields.shields.io/badge/License-GPLv3-blue.svg)
 
 `crazyforest` is a high-performance framework designed for methodological research in Machine Learning. It enables the study of entropy and stochasticity in ensemble models by introducing randomness in both the decision-tree growth phase and the forest aggregation logic.
 
